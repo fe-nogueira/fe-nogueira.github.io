@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparative Form Exercises</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f5f4f0;
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: #1a1a1a;
+    padding: 32px 20px 60px;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 780px; margin: 0 auto; }
+
+  /* Exercise block */
+  .exercise-block {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px 26px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border-left: 4px solid #2b2b2b;
+  }
+
+  .block-header {
+    display: flex; align-items: flex-start; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .block-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    background: #2b2b2b; color: #fff;
+    border-radius: 4px; padding: 3px 8px;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .block-instruction {
+    font-size: 14px; font-weight: 500; color: #333; line-height: 1.55;
+  }
+
+  /* Fill-in questions */
+  .questions-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .q-row {
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .q-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: #999; min-width: 20px; flex-shrink: 0;
+    padding-top: 1px;
+  }
+  .q-text {
+    font-size: 13.5px; color: #222; line-height: 1.9; flex: 1;
+  }
+  .hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; color: #888;
+    background: #f0ede6; padding: 1px 7px; border-radius: 4px;
+    white-space: nowrap;
+  }
+  .blank {
+    display: inline-block;
+    border: none; border-bottom: 2px solid #2b2b2b;
+    min-width: 150px;
+    padding: 0 4px 1px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; color: #2b2b2b;
+    background: none; outline: none;
+    transition: border-color 0.2s;
+    vertical-align: baseline;
+    margin: 0 3px;
+  }
+  .blank:focus { border-color: #f0a500; }
+  .blank.correct-input { border-color: #2ecc71; color: #27ae60; }
+  .blank.wrong-input  { border-color: #e74c3c; color: #c0392b; }
+
+  /* Underline / choice questions */
+  .choice-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .choice-row {
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .choice-text {
+    font-size: 13.5px; color: #222; line-height: 1.9; flex: 1;
+  }
+  .choice-btn {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13.5px; color: #2b2b2b;
+    background: #f0ede6;
+    transition: all 0.18s;
+    margin: 0 2px;
+    user-select: none;
+  }
+  .choice-btn:hover { background: #e5dfd4; border-color: #bbb; }
+  .choice-btn.selected { background: #2b2b2b; color: #fff; border-color: #2b2b2b; }
+  .choice-btn.correct-choice  { background: #2ecc71; color: #fff; border-color: #27ae60; }
+  .choice-btn.wrong-choice    { background: #e74c3c; color: #fff; border-color: #c0392b; }
+  .choice-btn.reveal-correct  { background: #d5f5e3; color: #1e8449; border-color: #2ecc71; }
+
+  /* Check button */
+  .check-btn {
+    margin-top: 18px;
+    padding: 8px 20px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px; font-weight: 600;
+    background: #2b2b2b; color: #fff;
+    border: none; border-radius: 6px;
+    cursor: pointer; letter-spacing: 0.04em;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .check-btn:hover { background: #444; }
+  .check-btn:active { transform: scale(0.97); }
+
+  .feedback {
+    display: none; margin-top: 10px;
+    font-size: 12.5px; padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok  { background: #eafaf1; color: #27ae60; }
+  .feedback.err { background: #fdf0ef; color: #c0392b; }
+
+  /* Score bar */
+  .score-bar {
+    display: none; margin-top: 18px;
+    background: #f0ede6; border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px; color: #444;
+    font-family: 'IBM Plex Mono', monospace;
+    text-align: center;
+  }
+  .score-bar.show { display: block; }
+  .score-bar .score-num { font-size: 22px; font-weight: 700; color: #2b2b2b; }
+
+  /* Reset */
+  .reset-all {
+    display: block; margin: 32px auto 0;
+    padding: 10px 28px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    background: transparent; color: #555;
+    border: 1.5px solid #bbb; border-radius: 8px;
+    cursor: pointer; letter-spacing: 0.03em;
+    transition: all 0.2s;
+  }
+  .reset-all:hover { border-color: #2b2b2b; color: #2b2b2b; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ── EXERCISE 1 ── -->
+  <div class="exercise-block" id="block1">
+    <div class="block-header">
+      <span class="block-num">EX 1</span>
+      <span class="block-instruction">Complete the sentences using the correct <strong>comparative form</strong> of the adjective in parentheses.</span>
+    </div>
+
+    <div class="questions-list">
+
+      <div class="q-row">
+        <span class="q-num">1.</span>
+        <span class="q-text">New cars are much <input class="blank" id="e1-0" type="text" autocomplete="off" spellcheck="false" placeholder="__________"> old cars. <span class="hint">quiet</span></span>
+      </div>
+
+      <div class="q-row">
+        <span class="q-num">2.</span>
+        <span class="q-text">Do you think money is <input class="blank" id="e1-1" type="text" autocomplete="off" spellcheck="false" placeholder="__________"> good health? <span class="hint">important</span></span>
+      </div>
+
+      <div class="q-row">
+        <span class="q-num">3.</span>
+        <span class="q-text">This coat is <input class="blank" id="e1-2" type="text" autocomplete="off" spellcheck="false" placeholder="__________"> that one. <span class="hint">nice</span></span>
+      </div>
+
+      <div class="q-row">
+        <span class="q-num">4.</span>
+        <span class="q-text">My old laptop was a lot <input class="blank" id="e1-3" type="text" autocomplete="off" spellcheck="false" placeholder="__________"> my new one. <span class="hint">heavy</span></span>
+      </div>
+
+      <div class="q-row">
+        <span class="q-num">5.</span>
+        <span class="q-text">Gas has been so expensive! I want a <input class="blank" id="e1-4" type="text" autocomplete="off" spellcheck="false" placeholder="__________"> car. <span class="hint">efficient</span></span>
+      </div>
+
+      <div class="q-row">
+        <span class="q-num">6.</span>
+        <span class="q-text">Many people think modern life is <input class="blank" id="e1-5" type="text" autocomplete="off" spellcheck="false" placeholder="__________"> life in the past. <span class="hint">good</span></span>
+      </div>
+
+      <div class="q-row">
+        <span class="q-num">7.</span>
+        <span class="q-text">Communication is a lot <input class="blank" id="e1-6" type="text" autocomplete="off" spellcheck="false" placeholder="__________"> it was 50 years ago. <span class="hint">easy</span></span>
+      </div>
+
+      <div class="q-row">
+        <span class="q-num">8.</span>
+        <span class="q-text">The pollution in my city is much <input class="blank" id="e1-7" type="text" autocomplete="off" spellcheck="false" placeholder="__________"> it used to be. <span class="hint">bad</span></span>
+      </div>
+
+      <div class="q-row">
+        <span class="q-num">9.</span>
+        <span class="q-text">I prefer <input class="blank" id="e1-8" type="text" autocomplete="off" spellcheck="false" placeholder="__________"> temperatures. <span class="hint">hot</span></span>
+      </div>
+
+      <div class="q-row">
+        <span class="q-num">10.</span>
+        <span class="q-text">My new school is a little <input class="blank" id="e1-9" type="text" autocomplete="off" spellcheck="false" placeholder="__________"> my old one. <span class="hint">far</span></span>
+      </div>
+
+    </div>
+
+    <button class="check-btn" onclick="checkEx1()">Check answers</button>
+    <div class="feedback" id="fb1"></div>
+    <div class="score-bar" id="score1"></div>
+  </div>
+
+  <!-- ── EXERCISE 2 ── -->
+  <div class="exercise-block" id="block2">
+    <div class="block-header">
+      <span class="block-num">EX 2</span>
+      <span class="block-instruction">Click the correct word(s) to complete each sentence.</span>
+    </div>
+
+    <div class="choice-list" id="choiceList"></div>
+
+    <button class="check-btn" onclick="checkEx2()">Check answers</button>
+    <div class="feedback" id="fb2"></div>
+    <div class="score-bar" id="score2"></div>
+  </div>
+
+  <button class="reset-all" onclick="resetAll()">↺ Reset all answers</button>
+
+</div>
+
+<script>
+// ── Exercise 1 answers ──
+const ex1Answers = [
+  ["quieter than"],
+  ["more important than"],
+  ["nicer than"],
+  ["heavier than"],
+  ["more efficient"],
+  ["better than"],
+  ["easier than"],
+  ["worse than"],
+  ["hotter"],
+  ["farther than", "further than"]
+];
+
+function norm(s) { return s.trim().toLowerCase().replace(/\s+/g,' '); }
+
+function checkEx1() {
+  let correct = 0;
+  ex1Answers.forEach((accepted, i) => {
+    const input = document.getElementById(`e1-${i}`);
+    const val = norm(input.value);
+    const ok = accepted.some(a => norm(a) === val);
+    input.classList.toggle('correct-input', ok);
+    input.classList.toggle('wrong-input', !ok);
+    if (ok) correct++;
+  });
+  const total = ex1Answers.length;
+  const fb = document.getElementById('fb1');
+  const sc = document.getElementById('score1');
+  fb.className = 'feedback show ' + (correct === total ? 'ok' : 'err');
+  fb.textContent = correct === total ? '✓ All correct!' : `✗ ${total - correct} answer(s) need attention.`;
+  sc.className = 'score-bar show';
+  sc.innerHTML = `Score: <span class="score-num">${correct}/${total}</span>`;
+}
+
+// ── Exercise 2 data ──
+const ex2Questions = [
+  {
+    parts: ["My computer is more efficient than ", null, "."],
+    options: ["than your", "than yours"],
+    correct: 1
+  },
+  {
+    parts: ["The white coat is warmer ", null, " the gray one."],
+    options: ["then", "than"],
+    correct: 1
+  },
+  {
+    parts: ["Ellen buys nicer clothes ", null, "."],
+    options: ["than I do", "than I am"],
+    correct: 0
+  },
+  {
+    parts: ["Cars are expensive, but houses are ", null, "."],
+    options: ["more expensive", "more expensive than"],
+    correct: 0
+  },
+  {
+    parts: ["Harry's motorcycle is newer than ", null, "."],
+    options: ["my", "mine"],
+    correct: 1
+  },
+  {
+    parts: ["Dave is 27 years old. His sister is older ", null, "."],
+    options: ["than he is", "than he does"],
+    correct: 0
+  }
+];
+
+let ex2Selections = new Array(ex2Questions.length).fill(null);
+let ex2Checked = false;
+
+function buildEx2() {
+  const list = document.getElementById('choiceList');
+  list.innerHTML = '';
+  ex2Questions.forEach((q, qi) => {
+    const row = document.createElement('div');
+    row.className = 'choice-row';
+
+    const numSpan = document.createElement('span');
+    numSpan.className = 'q-num';
+    numSpan.textContent = `${qi + 1}.`;
+
+    const textSpan = document.createElement('span');
+    textSpan.className = 'choice-text';
+
+    q.parts.forEach((part, pi) => {
+      if (part !== null) {
+        textSpan.appendChild(document.createTextNode(part));
+      } else {
+        q.options.forEach((opt, oi) => {
+          const btn = document.createElement('span');
+          btn.className = 'choice-btn';
+          btn.id = `choice-${qi}-${oi}`;
+          btn.textContent = opt;
+          btn.onclick = () => selectChoice(qi, oi);
+          textSpan.appendChild(btn);
+          if (oi < q.options.length - 1) {
+            textSpan.appendChild(document.createTextNode(' / '));
+          }
+        });
+      }
+    });
+
+    row.appendChild(numSpan);
+    row.appendChild(textSpan);
+    list.appendChild(row);
+  });
+}
+
+function selectChoice(qi, oi) {
+  if (ex2Checked) return;
+  ex2Selections[qi] = oi;
+  const q = ex2Questions[qi];
+  q.options.forEach((_, i) => {
+    const btn = document.getElementById(`choice-${qi}-${i}`);
+    btn.classList.toggle('selected', i === oi);
+  });
+}
+
+function checkEx2() {
+  ex2Checked = true;
+  let correct = 0;
+  ex2Questions.forEach((q, qi) => {
+    const sel = ex2Selections[qi];
+    q.options.forEach((_, oi) => {
+      const btn = document.getElementById(`choice-${qi}-${oi}`);
+      btn.classList.remove('selected', 'correct-choice', 'wrong-choice', 'reveal-correct');
+      if (oi === q.correct) {
+        if (sel === oi) {
+          btn.classList.add('correct-choice');
+          correct++;
+        } else {
+          btn.classList.add('reveal-correct');
+        }
+      } else if (sel === oi) {
+        btn.classList.add('wrong-choice');
+      }
+    });
+  });
+  const total = ex2Questions.length;
+  const fb = document.getElementById('fb2');
+  const sc = document.getElementById('score2');
+  fb.className = 'feedback show ' + (correct === total ? 'ok' : 'err');
+  fb.textContent = correct === total ? '✓ All correct!' : `✗ ${total - correct} answer(s) need attention. Correct answers are highlighted in green.`;
+  sc.className = 'score-bar show';
+  sc.innerHTML = `Score: <span class="score-num">${correct}/${total}</span>`;
+}
+
+function resetAll() {
+  // Ex1
+  ex1Answers.forEach((_, i) => {
+    const input = document.getElementById(`e1-${i}`);
+    input.value = '';
+    input.classList.remove('correct-input', 'wrong-input');
+  });
+  document.getElementById('fb1').className = 'feedback';
+  document.getElementById('score1').className = 'score-bar';
+
+  // Ex2
+  ex2Selections = new Array(ex2Questions.length).fill(null);
+  ex2Checked = false;
+  buildEx2();
+  document.getElementById('fb2').className = 'feedback';
+  document.getElementById('score2').className = 'score-bar';
+}
+
+buildEx2();
+</script>
+</body>
+</html>
