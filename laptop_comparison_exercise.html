@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f5f4f0;
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: #1a1a1a;
+    padding: 32px 20px 60px;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 780px; margin: 0 auto; }
+
+  .header {
+    display: flex; align-items: baseline; gap: 14px;
+    margin-bottom: 28px;
+  }
+  .header .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; color: #888; font-weight: 600;
+    border: 1.5px solid #ccc; border-radius: 4px;
+    padding: 2px 7px;
+  }
+  .header h1 {
+    font-size: 15px; font-weight: 500; color: #333; line-height: 1.5;
+    max-width: 580px;
+  }
+
+  /* Tables */
+  .tables-wrap { display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px; }
+
+  table {
+    width: 100%; border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  thead tr { background: #2b2b2b; }
+  thead th {
+    padding: 10px 14px; color: #fff;
+    font-size: 13px; font-weight: 600; text-align: left;
+    letter-spacing: 0.02em;
+  }
+  tbody tr { border-bottom: 1px solid #eee; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td {
+    padding: 9px 14px; font-size: 13px; color: #333;
+  }
+  tbody td:first-child { font-weight: 500; color: #555; }
+  .stars { color: #f0a500; letter-spacing: 1px; font-size: 14px; }
+
+  /* Exercise */
+  .exercise { display: flex; flex-direction: column; gap: 22px; }
+
+  .question-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border-left: 4px solid #2b2b2b;
+    transition: border-color 0.3s;
+  }
+  .question-card.correct { border-color: #2ecc71; }
+  .question-card.wrong { border-color: #e74c3c; }
+
+  .q-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .q-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 600;
+    background: #2b2b2b; color: #fff;
+    border-radius: 4px; padding: 2px 7px;
+    flex-shrink: 0;
+  }
+  .q-hint {
+    font-size: 12px; color: #888;
+    font-family: 'IBM Plex Mono', monospace;
+    background: #f0ede6; padding: 2px 8px; border-radius: 4px;
+  }
+
+  .sentence {
+    font-size: 14.5px; line-height: 2.2;
+    color: #222;
+  }
+  .blank {
+    display: inline-block;
+    border-bottom: 2px solid #2b2b2b;
+    min-width: 130px;
+    padding: 0 4px 1px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: #2b2b2b;
+    background: none;
+    border-top: none; border-left: none; border-right: none;
+    outline: none;
+    transition: border-color 0.25s;
+    vertical-align: baseline;
+    margin: 0 4px;
+  }
+  .blank:focus { border-color: #f0a500; }
+  .blank.correct-input { border-color: #2ecc71; color: #27ae60; }
+  .blank.wrong-input { border-color: #e74c3c; color: #c0392b; }
+
+  .check-btn {
+    margin-top: 14px;
+    padding: 7px 18px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px; font-weight: 600;
+    background: #2b2b2b; color: #fff;
+    border: none; border-radius: 6px;
+    cursor: pointer; letter-spacing: 0.04em;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .check-btn:hover { background: #444; }
+  .check-btn:active { transform: scale(0.97); }
+
+  .feedback {
+    margin-top: 10px;
+    font-size: 12.5px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: none;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: #eafaf1; color: #27ae60; }
+  .feedback.err { background: #fdf0ef; color: #c0392b; }
+
+  .reset-all {
+    display: block; margin: 32px auto 0;
+    padding: 10px 28px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    background: transparent; color: #555;
+    border: 1.5px solid #bbb; border-radius: 8px;
+    cursor: pointer; letter-spacing: 0.03em;
+    transition: all 0.2s;
+  }
+  .reset-all:hover { border-color: #2b2b2b; color: #2b2b2b; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <span class="num">10</span>
+    <h1>Look at the charts comparing three laptop computers. Then complete the sentences with the comparative form of the adjectives and adverbs in parentheses.</h1>
+  </div>
+
+  <div class="tables-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Product Details</th>
+          <th>T400</th>
+          <th>XJ7</th>
+          <th>A-50</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Screen size</td><td>15 inches</td><td>17 inches</td><td>14 inches</td></tr>
+        <tr><td>Weight</td><td>5.5 pounds</td><td>6 pounds</td><td>6.5 pounds</td></tr>
+        <tr><td>Amount of time on market</td><td>18 months</td><td>3 months</td><td>9 months</td></tr>
+        <tr><td>Cost</td><td>$565</td><td>$650</td><td>$499</td></tr>
+      </tbody>
+    </table>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Customer Ratings</th>
+          <th>T400</th>
+          <th>XJ7</th>
+          <th>A-50</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Starts quickly</td><td><span class="stars">★★★</span></td><td><span class="stars">★★</span></td><td><span class="stars">★★★★</span></td></tr>
+        <tr><td>Runs reliably</td><td><span class="stars">★★★★★</span></td><td><span class="stars">★★★★</span></td><td><span class="stars">★★★</span></td></tr>
+        <tr><td>Operates quietly</td><td><span class="stars">★★★★</span></td><td><span class="stars">★★★</span></td><td><span class="stars">★★★★★</span></td></tr>
+        <tr><td>Displays pictures well</td><td><span class="stars">★★★</span></td><td><span class="stars">★★★★★</span></td><td><span class="stars">★★★★</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="exercise" id="exercise"></div>
+
+  <button class="reset-all" onclick="resetAll()">↺ Reset all answers</button>
+</div>
+
+<script>
+const questions = [
+  {
+    num: 1,
+    hint: "large / small",
+    template: `The screen of the T400 is [0] the A-50's, but it is [1] the XJ7's.`,
+    blanks: [
+      { answer: "larger than", placeholder: "larger than" },
+      { answer: "smaller than", placeholder: "smaller than" }
+    ]
+  },
+  {
+    num: 2,
+    hint: "light / heavy",
+    template: `The XJ7 is [0] the A-50, but it is [1] the T400.`,
+    blanks: [
+      { answer: "lighter than", placeholder: "" },
+      { answer: "heavier than", placeholder: "" }
+    ]
+  },
+  {
+    num: 3,
+    hint: "new / old",
+    template: `The A-50 is [0] the T400, but it is [1] the XJ7.`,
+    blanks: [
+      { answer: "newer than", placeholder: "" },
+      { answer: "older than", placeholder: "" }
+    ]
+  },
+  {
+    num: 4,
+    hint: "cheap / expensive",
+    template: `The T400 is [0] the XJ7, but it is [1] the A-50.`,
+    blanks: [
+      { answer: "more expensive than", placeholder: "" },
+      { answer: "cheaper than", placeholder: "" }
+    ]
+  }
+];
+
+function buildExercise() {
+  const container = document.getElementById('exercise');
+  container.innerHTML = '';
+
+  questions.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `card-${qi}`;
+
+    const header = document.createElement('div');
+    header.className = 'q-header';
+    header.innerHTML = `<span class="q-num">${q.num}</span><span class="q-hint">${q.hint}</span>`;
+
+    const sentenceDiv = document.createElement('div');
+    sentenceDiv.className = 'sentence';
+
+    let html = q.template;
+    q.blanks.forEach((b, bi) => {
+      const val = b.placeholder ? `value="${b.placeholder}"` : '';
+      html = html.replace(`[${bi}]`, `<input class="blank" id="blank-${qi}-${bi}" type="text" ${val} placeholder="___________" autocomplete="off" spellcheck="false">`);
+    });
+    sentenceDiv.innerHTML = html;
+
+    const btn = document.createElement('button');
+    btn.className = 'check-btn';
+    btn.textContent = 'Check';
+    btn.onclick = () => checkQuestion(qi);
+
+    const feedback = document.createElement('div');
+    feedback.className = 'feedback';
+    feedback.id = `fb-${qi}`;
+
+    card.appendChild(header);
+    card.appendChild(sentenceDiv);
+    card.appendChild(btn);
+    card.appendChild(feedback);
+    container.appendChild(card);
+  });
+}
+
+function normalize(str) {
+  return str.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function checkQuestion(qi) {
+  const q = questions[qi];
+  const card = document.getElementById(`card-${qi}`);
+  const fb = document.getElementById(`fb-${qi}`);
+  let allCorrect = true;
+
+  q.blanks.forEach((b, bi) => {
+    const input = document.getElementById(`blank-${qi}-${bi}`);
+    const val = normalize(input.value);
+    const correct = normalize(b.answer);
+    if (val === correct) {
+      input.classList.remove('wrong-input');
+      input.classList.add('correct-input');
+    } else {
+      input.classList.remove('correct-input');
+      input.classList.add('wrong-input');
+      allCorrect = false;
+    }
+  });
+
+  card.classList.remove('correct', 'wrong');
+  fb.classList.remove('show', 'ok', 'err');
+
+  if (allCorrect) {
+    card.classList.add('correct');
+    fb.textContent = '✓ Correct!';
+    fb.classList.add('show', 'ok');
+  } else {
+    card.classList.add('wrong');
+    fb.textContent = '✗ Not quite. Check the highlighted blanks.';
+    fb.classList.add('show', 'err');
+  }
+}
+
+function resetAll() {
+  questions.forEach((q, qi) => {
+    const card = document.getElementById(`card-${qi}`);
+    const fb = document.getElementById(`fb-${qi}`);
+    card.classList.remove('correct', 'wrong');
+    fb.classList.remove('show', 'ok', 'err');
+    q.blanks.forEach((b, bi) => {
+      const input = document.getElementById(`blank-${qi}-${bi}`);
+      input.value = b.placeholder || '';
+      input.classList.remove('correct-input', 'wrong-input');
+    });
+  });
+}
+
+buildExercise();
+</script>
+</body>
+</html>

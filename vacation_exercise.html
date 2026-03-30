@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vacation Comparison Exercise</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f5f4f0;
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: #1a1a1a;
+    padding: 32px 20px 60px;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 780px; margin: 0 auto; }
+
+  .main-header {
+    display: flex; align-items: baseline; gap: 14px;
+    margin-bottom: 32px;
+  }
+  .main-header .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; color: #888; font-weight: 600;
+    border: 1.5px solid #ccc; border-radius: 4px;
+    padding: 2px 7px; flex-shrink: 0;
+  }
+  .main-header h1 {
+    font-size: 16px; font-weight: 700; color: #2b2b2b;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  /* Section cards */
+  .section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border-left: 4px solid #2b2b2b;
+  }
+
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-bottom: 14px;
+  }
+  .section-letter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; font-weight: 700;
+    background: #2b2b2b; color: #fff;
+    border-radius: 4px; padding: 2px 8px;
+  }
+  .section-title {
+    font-size: 13.5px; font-weight: 600; color: #444;
+  }
+
+  .instruction {
+    font-size: 13.5px; color: #444; line-height: 1.65;
+    margin-bottom: 16px;
+  }
+  .instruction strong { color: #2b2b2b; }
+
+  /* Part A - brainstorm tags */
+  .tag-input-wrap {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .idea-input {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; padding: 7px 12px;
+    border: 1.5px solid #ddd; border-radius: 6px;
+    outline: none; background: #fafafa;
+    transition: border-color 0.2s;
+    flex: 1; min-width: 180px;
+  }
+  .idea-input:focus { border-color: #f0a500; background: #fff; }
+
+  .add-btn {
+    padding: 7px 16px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px; font-weight: 600;
+    background: #2b2b2b; color: #fff;
+    border: none; border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .add-btn:hover { background: #444; }
+
+  .tags-container {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    min-height: 36px;
+  }
+  .tag {
+    background: #f0ede6;
+    border: 1.5px solid #ddd;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12.5px; color: #444;
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    animation: popIn 0.2s ease;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .tag-remove {
+    cursor: pointer; color: #aaa; font-size: 14px;
+    line-height: 1; transition: color 0.15s;
+  }
+  .tag-remove:hover { color: #e74c3c; }
+  .tag-placeholder {
+    font-size: 12px; color: #bbb; font-style: italic;
+    padding: 4px 0;
+  }
+
+  /* Part B - comparison chart */
+  .chart-setup { margin-bottom: 16px; }
+  .chart-inputs {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .chart-col-header input {
+    width: 100%;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    padding: 8px 12px;
+    border: 1.5px solid #ddd; border-radius: 8px 8px 0 0;
+    background: #2b2b2b; color: #fff;
+    outline: none;
+    transition: background 0.2s;
+  }
+  .chart-col-header input::placeholder { color: #aaa; }
+  .chart-col-header input:focus { background: #444; }
+
+  .chart-notes {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .chart-notes textarea {
+    width: 100%; height: 130px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; color: #333;
+    padding: 10px 12px;
+    border: 1.5px solid #ddd; border-radius: 0 0 8px 8px;
+    outline: none; resize: vertical;
+    background: #fafafa;
+    transition: border-color 0.2s;
+    line-height: 1.7;
+  }
+  .chart-notes textarea::placeholder { color: #ccc; font-style: italic; }
+  .chart-notes textarea:focus { border-color: #f0a500; background: #fff; }
+
+  /* Part C - sentences */
+  .sentences-list { display: flex; flex-direction: column; gap: 10px; }
+  .sentence-row {
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .sentence-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: #aaa;
+    padding-top: 10px; min-width: 18px;
+  }
+  .sentence-input {
+    flex: 1;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; color: #2b2b2b;
+    padding: 8px 12px;
+    border: 1.5px solid #ddd; border-radius: 6px;
+    outline: none; background: #fafafa;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+  }
+  .sentence-input:focus { border-color: #f0a500; background: #fff; }
+  .sentence-input::placeholder { color: #ccc; font-style: italic; }
+
+  .example-block {
+    background: #f0f7ff;
+    border-left: 3px solid #5b9bd5;
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+  .example-block p {
+    font-size: 12.5px; color: #4a7ab5;
+    font-style: italic; line-height: 1.7;
+  }
+  .example-label {
+    font-size: 10.5px; font-weight: 700; color: #7aabda;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 4px; text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Part D - preference */
+  .preference-textarea {
+    width: 100%; height: 100px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; color: #333;
+    padding: 10px 12px;
+    border: 1.5px solid #ddd; border-radius: 8px;
+    outline: none; resize: vertical;
+    background: #fafafa;
+    transition: border-color 0.2s;
+    line-height: 1.7;
+  }
+  .preference-textarea:focus { border-color: #f0a500; background: #fff; }
+  .preference-textarea::placeholder { color: #ccc; font-style: italic; }
+
+  /* Part E */
+  .partner-box {
+    background: #f9f9f6;
+    border: 1.5px dashed #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 13px; color: #666; line-height: 1.65;
+  }
+  .partner-icon { font-size: 22px; margin-bottom: 8px; }
+
+  /* Save / Print bar */
+  .action-bar {
+    display: flex; gap: 10px; justify-content: center;
+    margin-top: 32px; flex-wrap: wrap;
+  }
+  .action-btn {
+    padding: 10px 24px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    border-radius: 8px; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 0.03em;
+    border: 1.5px solid #2b2b2b;
+  }
+  .action-btn.primary { background: #2b2b2b; color: #fff; }
+  .action-btn.primary:hover { background: #444; }
+  .action-btn.secondary { background: transparent; color: #555; border-color: #bbb; }
+  .action-btn.secondary:hover { border-color: #2b2b2b; color: #2b2b2b; }
+
+  .saved-msg {
+    display: none; text-align: center;
+    font-size: 12px; color: #27ae60;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-top: 8px;
+  }
+  .saved-msg.show { display: block; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="main-header">
+    <span class="num">12</span>
+    <h1>Apply.</h1>
+  </div>
+
+  <!-- PART A -->
+  <div class="section">
+    <div class="section-label">
+      <span class="section-letter">A</span>
+      <span class="section-title">Brainstorm vacation ideas</span>
+    </div>
+    <p class="instruction">Imagine that you are going on vacation soon. Brainstorm a list of vacation ideas — for example, a camping vacation, a resort vacation, a safari, etc. Add your ideas below.</p>
+    <div class="tag-input-wrap">
+      <input class="idea-input" id="ideaInput" type="text" placeholder="e.g. a camping vacation" maxlength="60">
+      <button class="add-btn" onclick="addIdea()">+ Add</button>
+    </div>
+    <div class="tags-container" id="tagsContainer">
+      <span class="tag-placeholder" id="tagPlaceholder">Your ideas will appear here...</span>
+    </div>
+  </div>
+
+  <!-- PART B -->
+  <div class="section">
+    <div class="section-label">
+      <span class="section-letter">B</span>
+      <span class="section-title">Comparison chart</span>
+    </div>
+    <p class="instruction">Choose <strong>two</strong> of your vacation ideas from exercise <strong>A</strong> to compare. Name them below and write notes about each one.</p>
+    <div class="chart-inputs">
+      <div class="chart-col-header">
+        <input type="text" id="col1Title" placeholder="Vacation 1 (e.g. A Camping Vacation)">
+      </div>
+      <div class="chart-col-header">
+        <input type="text" id="col2Title" placeholder="Vacation 2 (e.g. A Resort Vacation)">
+      </div>
+    </div>
+    <div class="chart-notes">
+      <textarea id="col1Notes" placeholder="cheap&#10;sleep on the ground&#10;fun&#10;simple food&#10;close to nature"></textarea>
+      <textarea id="col2Notes" placeholder="expensive&#10;comfortable bed&#10;relaxing&#10;good food&#10;gym, pool"></textarea>
+    </div>
+  </div>
+
+  <!-- PART C -->
+  <div class="section">
+    <div class="section-label">
+      <span class="section-letter">C</span>
+      <span class="section-title">Write five comparing sentences</span>
+    </div>
+    <p class="instruction" style="margin-bottom:12px;">Write five sentences comparing your two vacation choices. Use information from your chart and <strong>comparative adjectives and adverbs</strong>.</p>
+    <div class="example-block">
+      <div class="example-label">Examples</div>
+      <p>A camping vacation is cheaper than a resort vacation.<br>
+      Your sleep will be more comfortable at a resort.<br>
+      Camping is more fun than a resort.</p>
+    </div>
+    <div class="sentences-list">
+      <div class="sentence-row"><span class="sentence-num">1.</span><input class="sentence-input" type="text" placeholder="Write your first comparing sentence..."></div>
+      <div class="sentence-row"><span class="sentence-num">2.</span><input class="sentence-input" type="text" placeholder="Write your second comparing sentence..."></div>
+      <div class="sentence-row"><span class="sentence-num">3.</span><input class="sentence-input" type="text" placeholder="Write your third comparing sentence..."></div>
+      <div class="sentence-row"><span class="sentence-num">4.</span><input class="sentence-input" type="text" placeholder="Write your fourth comparing sentence..."></div>
+      <div class="sentence-row"><span class="sentence-num">5.</span><input class="sentence-input" type="text" placeholder="Write your fifth comparing sentence..."></div>
+    </div>
+  </div>
+
+  <!-- PART D -->
+  <div class="section">
+    <div class="section-label">
+      <span class="section-letter">D</span>
+      <span class="section-title">Your preference</span>
+    </div>
+    <p class="instruction" style="margin-bottom:12px;">Choose one of your vacation ideas from exercise <strong>C</strong>. Write two or three sentences to explain why you prefer it.</p>
+    <div class="example-block">
+      <div class="example-label">Example</div>
+      <p>I want to go on a camping vacation. It's cheaper than a resort vacation, and it's closer to nature. . . .</p>
+    </div>
+    <textarea class="preference-textarea" id="preferenceText" placeholder="I want to go on a _________ vacation. It's _________ than a _________ vacation, and..."></textarea>
+  </div>
+
+  <!-- PART E -->
+  <div class="section" style="border-left-color: #5b9bd5;">
+    <div class="section-label">
+      <span class="section-letter" style="background:#5b9bd5;">E</span>
+      <span class="section-title">Share with a partner</span>
+    </div>
+    <div class="partner-box">
+      <div class="partner-icon">🗣️</div>
+      <p>Work with a partner. Share your comparing sentences from exercise <strong>C</strong> and explain your decision from exercise <strong>D</strong>.</p>
+      <br>
+      <p>Did your partner make a good choice? Why, or why not?</p>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="action-btn primary" onclick="saveAnswers()">💾 Save answers</button>
+    <button class="action-btn secondary" onclick="clearAll()">↺ Clear all</button>
+    <button class="action-btn secondary" onclick="window.print()">🖨 Print</button>
+  </div>
+  <div class="saved-msg" id="savedMsg">✓ Answers saved to this browser!</div>
+
+</div>
+
+<script>
+  let ideas = [];
+
+  function addIdea() {
+    const input = document.getElementById('ideaInput');
+    const val = input.value.trim();
+    if (!val) return;
+    ideas.push(val);
+    renderTags();
+    input.value = '';
+    input.focus();
+  }
+
+  document.getElementById('ideaInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addIdea();
+  });
+
+  function removeIdea(i) {
+    ideas.splice(i, 1);
+    renderTags();
+  }
+
+  function renderTags() {
+    const container = document.getElementById('tagsContainer');
+    const placeholder = document.getElementById('tagPlaceholder');
+    if (ideas.length === 0) {
+      container.innerHTML = '<span class="tag-placeholder" id="tagPlaceholder">Your ideas will appear here...</span>';
+      return;
+    }
+    container.innerHTML = ideas.map((idea, i) =>
+      `<span class="tag">${idea}<span class="tag-remove" onclick="removeIdea(${i})">×</span></span>`
+    ).join('');
+  }
+
+  function saveAnswers() {
+    const data = {
+      ideas,
+      col1Title: document.getElementById('col1Title').value,
+      col2Title: document.getElementById('col2Title').value,
+      col1Notes: document.getElementById('col1Notes').value,
+      col2Notes: document.getElementById('col2Notes').value,
+      sentences: [...document.querySelectorAll('.sentence-input')].map(i => i.value),
+      preference: document.getElementById('preferenceText').value
+    };
+    try {
+      localStorage.setItem('vacation_exercise', JSON.stringify(data));
+      const msg = document.getElementById('savedMsg');
+      msg.classList.add('show');
+      setTimeout(() => msg.classList.remove('show'), 3000);
+    } catch(e) {}
+  }
+
+  function loadAnswers() {
+    try {
+      const raw = localStorage.getItem('vacation_exercise');
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      ideas = data.ideas || [];
+      renderTags();
+      document.getElementById('col1Title').value = data.col1Title || '';
+      document.getElementById('col2Title').value = data.col2Title || '';
+      document.getElementById('col1Notes').value = data.col1Notes || '';
+      document.getElementById('col2Notes').value = data.col2Notes || '';
+      const inputs = document.querySelectorAll('.sentence-input');
+      (data.sentences || []).forEach((s, i) => { if (inputs[i]) inputs[i].value = s; });
+      document.getElementById('preferenceText').value = data.preference || '';
+    } catch(e) {}
+  }
+
+  function clearAll() {
+    if (!confirm('Clear all answers?')) return;
+    ideas = [];
+    renderTags();
+    document.getElementById('col1Title').value = '';
+    document.getElementById('col2Title').value = '';
+    document.getElementById('col1Notes').value = '';
+    document.getElementById('col2Notes').value = '';
+    document.querySelectorAll('.sentence-input').forEach(i => i.value = '');
+    document.getElementById('preferenceText').value = '';
+    try { localStorage.removeItem('vacation_exercise'); } catch(e) {}
+  }
+
+  loadAnswers();
+</script>
+</body>
+</html>
