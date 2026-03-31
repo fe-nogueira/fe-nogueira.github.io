@@ -1,0 +1,609 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{font-family:var(--font-sans);padding:1.5rem 0;max-width:820px}
+.hero{background:#FF6B5B;border-radius:var(--border-radius-lg);padding:1.75rem 2rem;margin-bottom:1.5rem}
+.hero-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:.4rem}
+.hero-title{font-size:24px;font-weight:500;color:#fff;margin-bottom:.3rem}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.85)}
+.progress-bar{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);overflow:hidden;height:6px;margin-bottom:1.5rem}
+.progress-fill{height:100%;background:#FF6B5B;border-radius:var(--border-radius-lg);transition:width .4s ease}
+.step-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center}
+.section{display:none}
+.section.active{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
+.q-label{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-secondary);margin-bottom:.5rem}
+.q-text{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:1rem;line-height:1.5}
+.opts{display:flex;flex-direction:column;gap:.5rem}
+.opt{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.65rem 1rem;font-size:14px;color:var(--color-text-primary);cursor:pointer;text-align:left;transition:border-color .15s}
+.opt:hover:not(.locked){border-color:var(--color-border-secondary)}
+.opt.correct{background:#EAF3DE;border-color:#3B6D11;color:#27500A}
+.opt.wrong{background:#FCEBEB;border-color:#A32D2D;color:#791F1F}
+.opt.locked{cursor:default}
+.feedback{font-size:13px;padding:.6rem .9rem;border-radius:var(--border-radius-md);margin-top:.75rem;line-height:1.5}
+.feedback.ok{background:#EAF3DE;color:#27500A}
+.feedback.err{background:#FCEBEB;color:#791F1F}
+.nav-row{display:flex;gap:.75rem;margin-top:1.5rem;align-items:center}
+.btn-next{background:#FF6B5B;border:none;border-radius:var(--border-radius-md);padding:.65rem 1.4rem;font-size:14px;font-weight:500;color:#fff;cursor:pointer}
+.btn-next:disabled{opacity:.4;cursor:default}
+.btn-prev{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.65rem 1.2rem;font-size:14px;color:var(--color-text-primary);cursor:pointer}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.75rem}
+.match-item{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.6rem .9rem;font-size:14px;color:var(--color-text-primary);cursor:pointer;min-height:44px;display:flex;align-items:center}
+.match-item.selected{border-color:#FF6B5B;background:#FAECE7;color:#712B13}
+.match-item.matched{background:#EAF3DE;border-color:#3B6D11;color:#27500A;cursor:default}
+.match-item.wrong-sel{background:#FCEBEB;border-color:#A32D2D;color:#791F1F}
+.match-col-head{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-secondary);margin-bottom:.4rem}
+.gap-fill input{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:.3rem .6rem;font-size:14px;color:var(--color-text-primary);background:var(--color-background-secondary);width:120px;margin:0 4px;font-family:var(--font-sans)}
+.gap-fill input.ok{border-color:#3B6D11;background:#EAF3DE;color:#27500A}
+.gap-fill input.err{border-color:#A32D2D;background:#FCEBEB;color:#791F1F}
+.gap-sentence{font-size:15px;color:var(--color-text-primary);line-height:2.2;margin-bottom:.5rem}
+.word-bank{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;padding:.75rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.word-chip{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:20px;padding:.3rem .8rem;font-size:13px;color:var(--color-text-primary);cursor:pointer}
+.word-chip.used{opacity:.35;cursor:default;text-decoration:line-through}
+.score-box{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center;margin-top:1rem}
+.score-num{font-size:48px;font-weight:500;color:#FF6B5B;line-height:1}
+.score-label{font-size:14px;color:var(--color-text-secondary);margin-top:.4rem;margin-bottom:1.5rem}
+.speak-card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
+.speak-prompt{font-size:15px;color:var(--color-text-primary);line-height:1.6;margin-bottom:1rem}
+.speak-hint{font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:.75rem}
+.sentence-builder{display:flex;flex-wrap:wrap;gap:.4rem;min-height:44px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:.5rem .75rem;margin-bottom:.75rem;align-items:center;background:var(--color-background-primary)}
+.s-chip{background:#FAECE7;border:0.5px solid #F0997B;border-radius:20px;padding:.2rem .75rem;font-size:13px;color:#712B13;cursor:pointer}
+.s-chip:hover{background:#F5C4B3}
+.opinion-btn{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.6rem 1rem;font-size:14px;color:var(--color-text-primary);cursor:pointer;text-align:left;margin-bottom:.4rem;width:100%}
+.opinion-btn.agree{background:#EAF3DE;border-color:#3B6D11;color:#27500A}
+.opinion-btn.disagree{background:#FAECE7;border-color:#993C1D;color:#712B13}
+textarea{width:100%;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:.75rem;font-size:14px;color:var(--color-text-primary);background:var(--color-background-secondary);font-family:var(--font-sans);line-height:1.6;resize:vertical}
+.congrats{font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem}
+</style>
+
+<div class="app">
+<div class="hero">
+  <div class="hero-label">A1+ English · 60-minute lesson</div>
+  <div class="hero-title">This is my home</div>
+  <div class="hero-sub">Vocabulary, listening &amp; speaking about homes and rooms</div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="prog" style="width:12%"></div></div>
+<div class="step-label"><span id="step-txt">Step 1 of 8</span><span id="score-running" style="color:#FF6B5B;font-weight:500"></span></div>
+
+<div id="s1" class="section active">
+  <div class="card">
+    <div class="q-label">Warm-up · Think &amp; choose</div>
+    <div class="q-text">What do you like about where you live? Choose all that apply.</div>
+    <div id="warmup-opts" class="opts">
+      <button class="opt" onclick="toggleWarm(this)">It's big and spacious</button>
+      <button class="opt" onclick="toggleWarm(this)">It's in a great location</button>
+      <button class="opt" onclick="toggleWarm(this)">It has a garden or terrace</button>
+      <button class="opt" onclick="toggleWarm(this)">It's cosy and comfortable</button>
+      <button class="opt" onclick="toggleWarm(this)">It has a nice kitchen</button>
+      <button class="opt" onclick="toggleWarm(this)">It's close to work or school</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="q-label">Your turn · Type</div>
+    <div class="q-text">What is one thing you DON'T like about your home? Write a sentence.</div>
+    <textarea id="warm-text" rows="2" placeholder="I don't like..."></textarea>
+    <div id="warm-fb" style="margin-top:.5rem;font-size:13px;color:var(--color-text-secondary)"></div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-next" onclick="goTo(2)">Continue →</button>
+  </div>
+</div>
+
+<div id="s2" class="section">
+  <div class="card">
+    <div class="q-label">Vocabulary · Match the room to what people do there</div>
+    <div class="q-text">Click a room on the left, then click the activity on the right that matches best.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem">
+      <div>
+        <div class="match-col-head">Room</div>
+        <div id="rooms-col"></div>
+      </div>
+      <div>
+        <div class="match-col-head">Activity</div>
+        <div id="acts-col"></div>
+      </div>
+    </div>
+    <div id="match-fb" class="feedback" style="display:none"></div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-prev" onclick="goTo(1)">← Back</button>
+    <button class="btn-next" id="btn2" onclick="checkMatch()" disabled>Check answers</button>
+  </div>
+</div>
+
+<div id="s3" class="section">
+  <div class="card">
+    <div class="q-label">Vocabulary · Fill in the gaps</div>
+    <div class="q-text">Click a word from the box, then click the blank to place it.</div>
+    <div class="word-bank" id="wb3"></div>
+    <div id="gaps3"></div>
+    <div id="gap-fb3" class="feedback" style="display:none"></div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-prev" onclick="goTo(2)">← Back</button>
+    <button class="btn-next" id="btn3" onclick="checkGaps()">Check answers</button>
+  </div>
+</div>
+
+<div id="s4" class="section">
+  <div class="card">
+    <div class="q-label">Listening · Before you watch</div>
+    <div class="q-text">A family lives in New York City in a very small flat. Before you watch the video, guess: how many people live there?</div>
+    <div class="opts" id="opts4"></div>
+  </div>
+  <div class="card">
+    <div class="q-label">Watch the video (to 02:05)</div>
+    <div class="q-text">The ESL Brains video is about a family in New York. What is it mainly about?</div>
+    <div class="opts" id="opts4b"></div>
+    <div id="fb4b" class="feedback" style="display:none"></div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-prev" onclick="goTo(3)">← Back</button>
+    <button class="btn-next" id="btn4" onclick="goTo(5)" disabled>Continue →</button>
+  </div>
+</div>
+
+<div id="s5" class="section">
+  <div class="card">
+    <div class="q-label">Comprehension · Choose the correct answer</div>
+    <div id="comp-qs"></div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-prev" onclick="goTo(4)">← Back</button>
+    <button class="btn-next" id="btn5" onclick="checkComp()">Check answers</button>
+  </div>
+</div>
+
+<div id="s6" class="section">
+  <div class="card">
+    <div class="q-label">Opinion · Do you agree?</div>
+    <div class="q-text">Read each statement. Click Agree or Disagree, then write a short reason.</div>
+    <div id="opinions"></div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-prev" onclick="goTo(5)">← Back</button>
+    <button class="btn-next" onclick="goTo(7)">Continue →</button>
+  </div>
+</div>
+
+<div id="s7" class="section">
+  <div class="card">
+    <div class="q-label">Grammar · Question words</div>
+    <div class="q-text">Click a word from the box to fill each blank.</div>
+    <div class="word-bank" id="wb7"></div>
+    <div id="gaps7"></div>
+    <div id="gap-fb7" class="feedback" style="display:none"></div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-prev" onclick="goTo(6)">← Back</button>
+    <button class="btn-next" id="btn7" onclick="checkGaps7()">Check answers</button>
+  </div>
+</div>
+
+<div id="s8" class="section">
+  <div class="card">
+    <div class="q-label">Speaking practice · Your dream home</div>
+    <div class="speak-card">
+      <div class="speak-prompt">Describe your dream home. Write 5–8 sentences.</div>
+      <div class="speak-hint">Use these words and phrases: <em>there is / there are, bedroom, kitchen, living room, garden, terrace, bathroom</em> — and say why you like each room!</div>
+      <textarea id="dream-text" rows="5" placeholder="My dream home has..."></textarea>
+      <div style="margin-top:.75rem">
+        <button class="btn-next" onclick="checkDream()">Send to Claude for feedback ↗</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="q-label">Flat vs house · Which is better?</div>
+    <div class="speak-card">
+      <div class="speak-prompt">The New York family wants to move. Which is better for them: a flat with a terrace or a house with a garden?</div>
+      <div class="speak-hint">Give at least 3 reasons. Use: <em>The [flat/house] is better because… / The [flat/house] is worse because…</em></div>
+      <textarea id="compare-text" rows="4" placeholder="I think the house is better because..."></textarea>
+      <div style="margin-top:.75rem">
+        <button class="btn-next" onclick="checkCompare()">Send to Claude for feedback ↗</button>
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-prev" onclick="goTo(7)">← Back</button>
+    <button class="btn-next" onclick="goTo(9)">Finish lesson →</button>
+  </div>
+</div>
+
+<div id="s9" class="section">
+  <div class="score-box">
+    <div class="congrats">Great work!</div>
+    <div style="font-size:14px;color:var(--color-text-secondary);margin:.4rem 0 1.5rem">You completed "This is my home"</div>
+    <div class="score-num" id="final-score">–</div>
+    <div class="score-label">correct answers in graded exercises</div>
+    <div style="margin-top:1.5rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn-next" onclick="sendPrompt('Can you give me more practice with there is / there are and home vocabulary?')">More practice ↗</button>
+      <button class="btn-prev" onclick="restart()">Start again</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+var scores={match:0,gaps:0,comp:0,gaps7:0};
+var totalPossible=0;
+
+var matchPairs=[
+  {room:'kitchen',act:'cook dinner'},
+  {room:'bathroom',act:'brush your teeth'},
+  {room:'bedroom',act:'get dressed'},
+  {room:'living room',act:'watch films'},
+  {room:'garden',act:'look at the flowers'},
+  {room:'office',act:'have online meetings'}
+];
+var selRoom=null,selAct=null;
+var matchedRooms=new Set(),matchedActs=new Set();
+
+function buildMatch(){
+  var rc=document.getElementById('rooms-col');
+  var ac=document.getElementById('acts-col');
+  rc.innerHTML='';ac.innerHTML='';
+  matchPairs.forEach(function(p){
+    var r=document.createElement('div');
+    r.className='match-item';r.dataset.room=p.room;r.textContent=p.room;
+    r.onclick=function(){selectRoom(this)};
+    rc.appendChild(r);
+    var a=document.createElement('div');
+    a.className='match-item';a.dataset.act=p.act;a.textContent=p.act;
+    a.onclick=function(){selectAct(this)};
+    ac.appendChild(a);
+  });
+  shuffle(ac);
+  totalPossible+=matchPairs.length;
+}
+
+function shuffle(container){
+  var items=Array.from(container.children);
+  for(var i=items.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));container.appendChild(items[j]);items.splice(j,1)}
+}
+
+function selectRoom(el){
+  if(el.classList.contains('matched')||el.classList.contains('locked'))return;
+  document.querySelectorAll('#rooms-col .match-item.selected').forEach(function(x){x.classList.remove('selected')});
+  el.classList.add('selected');selRoom=el;tryMatch();
+}
+function selectAct(el){
+  if(el.classList.contains('matched')||el.classList.contains('locked'))return;
+  document.querySelectorAll('#acts-col .match-item.selected').forEach(function(x){x.classList.remove('selected')});
+  el.classList.add('selected');selAct=el;tryMatch();
+}
+function tryMatch(){
+  if(!selRoom||!selAct)return;
+  var pair=matchPairs.find(function(p){return p.room===selRoom.dataset.room});
+  if(pair&&pair.act===selAct.dataset.act){
+    selRoom.classList.replace('selected','matched');
+    selAct.classList.replace('selected','matched');
+    matchedRooms.add(selRoom.dataset.room);
+    scores.match++;
+  } else {
+    selRoom.classList.add('wrong-sel');selAct.classList.add('wrong-sel');
+    setTimeout(function(){
+      if(selRoom)selRoom.classList.remove('wrong-sel','selected');
+      if(selAct)selAct.classList.remove('wrong-sel','selected');
+    },600);
+  }
+  selRoom=null;selAct=null;
+  if(matchedRooms.size===matchPairs.length){
+    document.getElementById('btn2').textContent='Continue →';
+    document.getElementById('btn2').onclick=function(){goTo(3)};
+    document.getElementById('btn2').disabled=false;
+  }
+  if(document.querySelectorAll('#rooms-col .match-item:not(.matched)').length>0)
+    document.getElementById('btn2').disabled=false;
+}
+
+function checkMatch(){
+  var fb=document.getElementById('match-fb');
+  var wrong=document.querySelectorAll('.match-item.wrong-sel').length;
+  if(matchedRooms.size===matchPairs.length){
+    fb.className='feedback ok';fb.textContent='Perfect! All pairs matched correctly.';fb.style.display='block';
+    document.getElementById('btn2').textContent='Continue →';document.getElementById('btn2').onclick=function(){goTo(3)};
+  } else {
+    fb.className='feedback err';fb.textContent='Keep going — keep clicking to match the remaining pairs!';fb.style.display='block';
+  }
+}
+
+var gapData=[
+  {before:'People usually',blank:'cook',after:'in the kitchen.'},
+  {before:'You can',blank:'sleep',after:'in the bedroom.'},
+  {before:'Families often eat in the',blank:'dining room',after:'.'},
+  {before:'You can park your car in the',blank:'garage',after:'.'},
+  {before:'In summer, people relax on the',blank:'terrace',after:'.'}
+];
+var gapWords=['cook','sleep','dining room','garage','terrace','bathroom','living room'];
+var gapSel=null;
+var gapAnswers=Array(gapData.length).fill(null);
+
+function buildGaps(){
+  var wb=document.getElementById('wb3');
+  wb.innerHTML='';
+  gapWords.forEach(function(w){
+    var chip=document.createElement('span');
+    chip.className='word-chip';chip.dataset.w=w;chip.textContent=w;
+    chip.onclick=function(){selectWord(this,'wb3')};
+    wb.appendChild(chip);
+  });
+  var gc=document.getElementById('gaps3');
+  gc.innerHTML='';
+  gapData.forEach(function(g,i){
+    var d=document.createElement('div');
+    d.className='gap-sentence';d.style.marginBottom='1rem';
+    d.innerHTML=g.before+' <span id="blank3-'+i+'" style="display:inline-block;min-width:100px;border-bottom:2px solid #FF6B5B;padding:0 4px;cursor:pointer;font-weight:500;color:#993C1D;font-size:15px" data-idx="'+i+'" onclick="selectBlank(this,\'wb3\')">_____</span> '+g.after;
+    gc.appendChild(d);
+  });
+  totalPossible+=gapData.length;
+}
+
+function selectWord(chip,wbId){
+  document.querySelectorAll('#'+wbId+' .word-chip').forEach(function(c){c.style.outline='none'});
+  chip.style.outline='2px solid #FF6B5B';
+  gapSel={word:chip.dataset.w,chip:chip,wb:wbId};
+}
+function selectBlank(blank,wbId){
+  if(!gapSel||gapSel.wb!==wbId)return;
+  var idx=parseInt(blank.dataset.idx);
+  if(gapAnswers[idx]){
+    var oldChip=document.querySelector('#'+wbId+' [data-w="'+gapAnswers[idx]+'"]');
+    if(oldChip)oldChip.classList.remove('used');
+  }
+  blank.textContent=gapSel.word;
+  blank.style.color='#185FA5';
+  gapAnswers[idx]=gapSel.word;
+  gapSel.chip.classList.add('used');gapSel.chip.style.outline='none';
+  gapSel=null;
+}
+
+function checkGaps(){
+  var correct=0;
+  gapData.forEach(function(g,i){
+    var blank=document.getElementById('blank3-'+i);
+    if(gapAnswers[i]&&gapAnswers[i].toLowerCase()===g.blank.toLowerCase()){
+      blank.style.background='#EAF3DE';blank.style.color='#27500A';blank.style.borderBottomColor='#3B6D11';
+      correct++;
+    } else {
+      blank.style.background='#FCEBEB';blank.style.color='#791F1F';blank.style.borderBottomColor='#A32D2D';
+      blank.textContent=gapAnswers[i]||'_____';
+    }
+  });
+  scores.gaps=correct;
+  var fb=document.getElementById('gap-fb3');
+  if(correct===gapData.length){
+    fb.className='feedback ok';fb.textContent='All correct! Well done.';
+  } else {
+    fb.className='feedback err';fb.textContent=correct+' of '+gapData.length+' correct. The correct answers: '+gapData.map(function(g){return g.blank}).join(', ')+'.';
+  }
+  fb.style.display='block';
+  document.getElementById('btn3').textContent='Continue →';document.getElementById('btn3').onclick=function(){goTo(4)};
+}
+
+var q4Answered=false;
+function buildQ4(){
+  var opts=['four','seven','ten'];
+  var c='seven';
+  var ol=document.getElementById('opts4');
+  ol.innerHTML='';
+  opts.forEach(function(o){
+    var b=document.createElement('button');
+    b.className='opt';b.textContent=o;
+    b.onclick=function(){
+      if(q4Answered)return;
+      q4Answered=true;
+      document.querySelectorAll('#opts4 .opt').forEach(function(x){x.classList.add('locked')});
+      b.classList.add(o===c?'correct':'wrong');
+      if(o!==c){var cb=ol.querySelector('[data-v="'+c+'"]');if(cb)cb.classList.add('correct')}
+    };b.dataset.v=o;
+    ol.appendChild(b);
+  });
+  var opts2=['A family in a small New York flat','A building with many families','Families with small children'];
+  var c2=opts2[0];
+  var ol2=document.getElementById('opts4b');
+  ol2.innerHTML='';var q4bDone=false;
+  opts2.forEach(function(o){
+    var b=document.createElement('button');b.className='opt';b.textContent=o;
+    b.onclick=function(){
+      if(q4bDone)return;q4bDone=true;
+      document.querySelectorAll('#opts4b .opt').forEach(function(x){x.classList.add('locked')});
+      b.classList.add(o===c2?'correct':'wrong');
+      var fb=document.getElementById('fb4b');
+      if(o===c2){fb.className='feedback ok';fb.textContent='Correct! The video is about a family of 7 living in a tiny Manhattan flat.'}
+      else{fb.className='feedback err';fb.textContent='Not quite. The answer is A — a family in a small New York flat.'}
+      fb.style.display='block';
+      document.getElementById('btn4').disabled=false;
+    };
+    ol2.appendChild(b);
+  });
+}
+
+var compQs=[
+  {q:'What extra space does the family have outside?',opts:['A terrace','A garden','A gym'],ans:0},
+  {q:'How big is the dining table?',opts:['For 6 people','For 8 people','For 12 people'],ans:2},
+  {q:'How many bedrooms are in the flat?',opts:['One','Two','Three'],ans:0},
+  {q:'Where do the parents sleep?',opts:['In a king-sized bed','In a queen-sized bed','In a single bed'],ans:1},
+  {q:'How does the dad enter the house?',opts:['Through the door','Through the bathroom','Through the window'],ans:2},
+  {q:'How many bathrooms are in the flat?',opts:['None','One','Two'],ans:1}
+];
+var compAnswers=Array(compQs.length).fill(null);
+
+function buildComp(){
+  var el=document.getElementById('comp-qs');el.innerHTML='';
+  compQs.forEach(function(q,qi){
+    var wrap=document.createElement('div');wrap.style.marginBottom='1.25rem';
+    var qt=document.createElement('div');qt.className='q-text';qt.style.fontSize='14px';qt.style.marginBottom='.5rem';
+    qt.textContent=(qi+1)+'. '+q.q;wrap.appendChild(qt);
+    var od=document.createElement('div');od.className='opts';od.style.flexDirection='row';od.style.flexWrap='wrap';od.style.gap='.4rem';
+    q.opts.forEach(function(o,oi){
+      var b=document.createElement('button');b.className='opt';b.style.flex='0 0 auto';b.style.padding='.45rem .9rem';b.style.fontSize='13px';b.textContent=o;
+      b.onclick=function(){
+        if(b.classList.contains('locked'))return;
+        od.querySelectorAll('.opt').forEach(function(x){x.classList.remove('selected-temp')});
+        b.classList.add('selected-temp');
+        b.style.border='2px solid #FF6B5B';
+        compAnswers[qi]=oi;
+        od.querySelectorAll('.opt').forEach(function(x){if(x!==b)x.style.border=''});
+      };
+      od.appendChild(b);
+    });
+    wrap.appendChild(od);el.appendChild(wrap);
+  });
+  totalPossible+=compQs.length;
+}
+
+function checkComp(){
+  var correct=0;
+  compQs.forEach(function(q,qi){
+    var od=document.getElementById('comp-qs').querySelectorAll('.opts')[qi];
+    var btns=od.querySelectorAll('.opt');
+    btns.forEach(function(b){b.classList.add('locked');b.style.border=''});
+    if(compAnswers[qi]===q.ans){correct++;btns[q.ans].classList.add('correct')}
+    else{
+      if(compAnswers[qi]!==null)btns[compAnswers[qi]].classList.add('wrong');
+      btns[q.ans].classList.add('correct');
+    }
+  });
+  scores.comp=correct;
+  document.getElementById('btn5').textContent='Continue →';document.getElementById('btn5').onclick=function(){goTo(6)};
+}
+
+var opinionData=[
+  'The flat in the video is too small for the family.',
+  'If you live in a small flat, you don\'t have to clean it very often.',
+  'It\'s better to live in a small flat in New York than in a big flat in a small city.',
+  'It\'s better to live in a flat you own than in a big flat you don\'t own.'
+];
+
+function buildOpinions(){
+  var el=document.getElementById('opinions');el.innerHTML='';
+  opinionData.forEach(function(stmt,i){
+    var card=document.createElement('div');card.className='speak-card';card.style.marginBottom='.75rem';
+    var p=document.createElement('div');p.className='speak-prompt';p.textContent=stmt;card.appendChild(p);
+    var row=document.createElement('div');row.style.display='flex';row.style.gap='.5rem';row.style.marginBottom='.75rem';
+    ['I agree','I disagree'].forEach(function(label){
+      var b=document.createElement('button');b.className='opinion-btn';b.style.flex='1';b.textContent=label;
+      b.onclick=function(){
+        row.querySelectorAll('.opinion-btn').forEach(function(x){x.classList.remove('agree','disagree')});
+        b.classList.add(label==='I agree'?'agree':'disagree');
+      };
+      row.appendChild(b);
+    });
+    card.appendChild(row);
+    var hint=document.createElement('div');hint.style.fontSize='12px';hint.style.color='var(--color-text-secondary)';hint.style.marginBottom='.4rem';hint.textContent='Write your reason:';card.appendChild(hint);
+    var ta=document.createElement('textarea');ta.rows=2;ta.placeholder='...because';card.appendChild(ta);
+    el.appendChild(card);
+  });
+}
+
+var gap7Data=[
+  {before:'',blank:'How many',after:'rooms are there in your house?'},
+  {before:'',blank:'What',after:'do you usually do in the kitchen?'},
+  {before:'',blank:'How',after:'big is the table in your house?'},
+  {before:'',blank:'Why',after:'do people sometimes need an office at home?'},
+  {before:'',blank:'Which',after:'place is better: a garden or a terrace?'},
+  {before:'',blank:'What time',after:'do you usually use the bathroom in the morning?'}
+];
+var gap7Words=['How many','What','How','Why','Which','What time','Where','Who'];
+var gap7Answers=Array(gap7Data.length).fill(null);
+var gap7Sel=null;
+
+function buildGaps7(){
+  var wb=document.getElementById('wb7');wb.innerHTML='';
+  gap7Words.forEach(function(w){
+    var chip=document.createElement('span');chip.className='word-chip';chip.dataset.w=w;chip.textContent=w;
+    chip.onclick=function(){
+      document.querySelectorAll('#wb7 .word-chip').forEach(function(c){c.style.outline='none'});
+      chip.style.outline='2px solid #FF6B5B';
+      gap7Sel={word:chip.dataset.w,chip:chip};
+    };
+    wb.appendChild(chip);
+  });
+  var gc=document.getElementById('gaps7');gc.innerHTML='';
+  gap7Data.forEach(function(g,i){
+    var d=document.createElement('div');d.style.marginBottom='1rem';d.style.fontSize='15px';d.style.color='var(--color-text-primary)';d.style.lineHeight='2';
+    d.innerHTML='<span id="blank7-'+i+'" style="display:inline-block;min-width:90px;border-bottom:2px solid #FF6B5B;padding:0 4px;cursor:pointer;font-weight:500;color:#993C1D" data-idx="'+i+'" onclick="placeWord7(this)">_____</span> '+g.after;
+    gc.appendChild(d);
+  });
+  totalPossible+=gap7Data.length;
+}
+
+function placeWord7(blank){
+  if(!gap7Sel)return;
+  var idx=parseInt(blank.dataset.idx);
+  if(gap7Answers[idx]){
+    var oldChip=document.querySelector('#wb7 [data-w="'+gap7Answers[idx]+'"]');
+    if(oldChip)oldChip.classList.remove('used');
+  }
+  blank.textContent=gap7Sel.word;blank.style.color='#185FA5';
+  gap7Answers[idx]=gap7Sel.word;
+  gap7Sel.chip.classList.add('used');gap7Sel.chip.style.outline='none';
+  gap7Sel=null;
+}
+
+function checkGaps7(){
+  var correct=0;
+  gap7Data.forEach(function(g,i){
+    var blank=document.getElementById('blank7-'+i);
+    if(gap7Answers[i]&&gap7Answers[i].toLowerCase()===g.blank.toLowerCase()){
+      blank.style.background='#EAF3DE';blank.style.color='#27500A';blank.style.borderBottomColor='#3B6D11';
+      correct++;
+    } else {
+      blank.style.background='#FCEBEB';blank.style.color='#791F1F';blank.style.borderBottomColor='#A32D2D';
+    }
+  });
+  scores.gaps7=correct;
+  var fb=document.getElementById('gap-fb7');
+  if(correct===gap7Data.length){fb.className='feedback ok';fb.textContent='All correct! Great job.'}
+  else{fb.className='feedback err';fb.textContent=correct+' of '+gap7Data.length+' correct. Correct answers: '+gap7Data.map(function(g){return g.blank}).join(', ')+'.'}
+  fb.style.display='block';
+  document.getElementById('btn7').textContent='Continue →';document.getElementById('btn7').onclick=function(){goTo(8)};
+}
+
+function toggleWarm(btn){btn.classList.toggle('correct')}
+
+function checkDream(){
+  var t=document.getElementById('dream-text').value.trim();
+  if(t.length<10){alert('Please write a few sentences first!');return;}
+  sendPrompt('Please read my description of my dream home and give me kind, simple feedback. I am an A1+ English learner. Here is what I wrote: "'+t+'"');
+}
+function checkCompare(){
+  var t=document.getElementById('compare-text').value.trim();
+  if(t.length<10){alert('Please write a few sentences first!');return;}
+  sendPrompt('I am an A1+ English learner. Please give me friendly feedback on my paragraph comparing a flat with a terrace vs a house with a garden. Here is what I wrote: "'+t+'"');
+}
+
+var currentStep=1;
+var totalSteps=8;
+
+function goTo(n){
+  document.getElementById('s'+currentStep).classList.remove('active');
+  currentStep=n;
+  document.getElementById('s'+n).classList.add('active');
+  var pct=Math.round((n/totalSteps)*100);
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('step-txt').textContent='Step '+n+' of '+totalSteps;
+  if(n===9){
+    var total=scores.match+scores.gaps+scores.comp+scores.gaps7;
+    var possible=matchPairs.length+gapData.length+compQs.length+gap7Data.length;
+    document.getElementById('final-score').textContent=total+'/'+possible;
+  }
+  window.scrollTo(0,0);
+}
+
+function restart(){
+  scores={match:0,gaps:0,comp:0,gaps7:0};
+  selRoom=null;selAct=null;matchedRooms=new Set();matchedActs=new Set();
+  gapAnswers=Array(gapData.length).fill(null);gap7Answers=Array(gap7Data.length).fill(null);
+  gapSel=null;gap7Sel=null;q4Answered=false;compAnswers=Array(compQs.length).fill(null);
+  init();goTo(1);
+}
+
+function init(){
+  buildMatch();buildGaps();buildQ4();buildComp();buildOpinions();buildGaps7();
+  document.getElementById('btn2').disabled=true;
+}
+
+init();
+</script>
