@@ -1,0 +1,315 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .lp { padding: 1.5rem 0; max-width: 860px; }
+  .hero { background: #FF6B5B; border-radius: var(--border-radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
+  .hero-tag { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.75); margin-bottom: 0.5rem; }
+  .hero-title { font-size: 26px; font-weight: 500; color: #fff; margin-bottom: 0.5rem; }
+  .hero-sub { font-size: 14px; color: rgba(255,255,255,0.85); }
+  .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .meta-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; flex: 1; min-width: 120px; }
+  .meta-label { font-size: 11px; color: var(--color-text-secondary); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 4px; }
+  .meta-val { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+  .section-head { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-secondary); margin: 2rem 0 0.75rem; padding-bottom: 0.5rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .block { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 0.75rem; display: flex; gap: 1rem; }
+  .block-left { flex-shrink: 0; width: 56px; text-align: right; }
+  .time-badge { font-size: 12px; font-weight: 500; color: #FF6B5B; background: #FAECE7; border-radius: 6px; padding: 3px 7px; display: inline-block; margin-bottom: 4px; }
+  .dur-badge { font-size: 11px; color: var(--color-text-secondary); }
+  .block-right { flex: 1; }
+  .block-phase { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+  .block-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+  .block-body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.65; }
+  .block-body ul { padding-left: 1.1rem; margin-top: 6px; }
+  .block-body li { margin-bottom: 3px; }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .tag { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 500; }
+  .tag-vocab { background: #E1F5EE; color: #0F6E56; }
+  .tag-speaking { background: #E6F1FB; color: #185FA5; }
+  .tag-listening { background: #FAEEDA; color: #854F0B; }
+  .tag-grammar { background: #EEEDFE; color: #534AB7; }
+  .tag-writing { background: #FBEAF0; color: #993556; }
+  .tip { background: #FAEEDA; border-left: 3px solid #EF9F27; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; padding: 0.65rem 0.9rem; font-size: 12px; color: #633806; margin-top: 10px; line-height: 1.55; }
+  .tip strong { font-weight: 500; }
+  .phase-warm { color: #E24B4A; }
+  .phase-vocab { color: #0F6E56; }
+  .phase-listen { color: #854F0B; }
+  .phase-gram { color: #534AB7; }
+  .phase-speak { color: #185FA5; }
+  .phase-prod { color: #993556; }
+  .phase-wrap { color: #5F5E5A; }
+  .objectives { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 0.75rem; }
+  .obj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+  .obj-item { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem; font-size: 13px; color: var(--color-text-primary); line-height: 1.5; }
+  .obj-icon { font-size: 14px; margin-bottom: 4px; display: block; }
+  .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 10px; }
+  .vocab-chip { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 8px 10px; font-size: 13px; color: var(--color-text-primary); }
+  .vocab-chip em { display: block; font-size: 11px; color: var(--color-text-secondary); font-style: normal; margin-top: 2px; }
+  .timeline { display: flex; gap: 4px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tl-seg { border-radius: 4px; height: 8px; }
+  .tl-warm { background: #E24B4A; }
+  .tl-vocab { background: #1D9E75; }
+  .tl-listen { background: #EF9F27; }
+  .tl-gram { background: #7F77DD; }
+  .tl-speak { background: #378ADD; }
+  .tl-prod { background: #D4537E; }
+  .tl-wrap { background: #888780; }
+  .tl-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .tl-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--color-text-secondary); }
+  .tl-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .answers { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; margin-top: 10px; font-size: 13px; color: var(--color-text-primary); }
+  .answers strong { font-weight: 500; display: block; margin-bottom: 4px; font-size: 12px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+</style>
+
+<div class="lp">
+  <div class="hero">
+    <div class="hero-tag">ESL Brains · A1+ · 60-minute lesson</div>
+    <div class="hero-title">This is my home</div>
+    <div class="hero-sub">Vocabulary, listening & speaking — rooms, furniture, and describing your home</div>
+  </div>
+
+  <div class="meta-row">
+    <div class="meta-card"><div class="meta-label">Level</div><div class="meta-val">A1+</div></div>
+    <div class="meta-card"><div class="meta-label">Duration</div><div class="meta-val">60 min</div></div>
+    <div class="meta-card"><div class="meta-label">Format</div><div class="meta-val">1-to-1</div></div>
+    <div class="meta-card"><div class="meta-label">Main skill</div><div class="meta-val">Speaking</div></div>
+    <div class="meta-card"><div class="meta-label">Topic</div><div class="meta-val">Homes &amp; rooms</div></div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-seg tl-warm" style="flex: 7;" title="Warm-up 7min"></div>
+    <div class="tl-seg tl-vocab" style="flex: 10;" title="Vocabulary 10min"></div>
+    <div class="tl-seg tl-listen" style="flex: 15;" title="Listening 15min"></div>
+    <div class="tl-seg tl-speak" style="flex: 12;" title="Speaking 12min"></div>
+    <div class="tl-seg tl-gram" style="flex: 10;" title="Grammar 10min"></div>
+    <div class="tl-seg tl-prod" style="flex: 6;" title="Production 6min"></div>
+  </div>
+  <div class="tl-legend">
+    <div class="tl-item"><div class="tl-dot tl-warm"></div>Warm-up</div>
+    <div class="tl-item"><div class="tl-dot tl-vocab"></div>Vocabulary</div>
+    <div class="tl-item"><div class="tl-dot tl-listen"></div>Listening</div>
+    <div class="tl-item"><div class="tl-dot tl-speak"></div>Speaking</div>
+    <div class="tl-item"><div class="tl-dot tl-gram"></div>Grammar review</div>
+    <div class="tl-item"><div class="tl-dot tl-prod"></div>Production</div>
+  </div>
+
+  <div class="objectives">
+    <div class="block-title" style="margin-bottom:4px;">Lesson objectives</div>
+    <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:8px;">By the end of the lesson, the student will be able to:</div>
+    <div class="obj-grid">
+      <div class="obj-item">Name 10+ rooms and spaces in a home and describe what people do in each</div>
+      <div class="obj-item">Use <em>there is / there are</em> and basic question words (how many, where, what) to describe their own home</div>
+      <div class="obj-item">Understand a short video about a real New York apartment and answer comprehension questions</div>
+      <div class="obj-item">Express preferences and give simple reasons using <em>I think… because…</em></div>
+    </div>
+  </div>
+
+  <div class="section-head">Phase 1 — Warm-up</div>
+
+  <div class="block">
+    <div class="block-left">
+      <div class="time-badge">0:00</div>
+      <div class="dur-badge">7 min</div>
+    </div>
+    <div class="block-right">
+      <div class="block-phase phase-warm">Warm-up · Discussion</div>
+      <div class="block-title">What do you like about your home?</div>
+      <div class="block-body">
+        Open the lesson with the three discussion questions from slide 3. Keep this conversational — the goal is to activate background knowledge and get the student talking from minute one.
+        <ul>
+          <li>What do you like about your home?</li>
+          <li>What don't you like about it?</li>
+          <li>Do you prefer to live in a flat or a house? Why?</li>
+        </ul>
+        <div class="tip"><strong>Teacher note:</strong> Don't correct heavily here — just listen and note vocabulary gaps for later. If the student is very quiet, prompt with "Tell me one thing in your home you love."</div>
+      </div>
+      <div class="tag-row"><span class="tag tag-speaking">Speaking</span></div>
+    </div>
+  </div>
+
+  <div class="section-head">Phase 2 — Vocabulary</div>
+
+  <div class="block">
+    <div class="block-left">
+      <div class="time-badge">0:07</div>
+      <div class="dur-badge">10 min</div>
+    </div>
+    <div class="block-right">
+      <div class="block-phase phase-vocab">Vocabulary · Rooms &amp; spaces</div>
+      <div class="block-title">Introduce and check the key vocabulary box</div>
+      <div class="block-body">
+        Present the 10 room/space words from slide 5. For each word, ask: "Do you have this in your home?" This turns a vocabulary exercise into immediate personalised practice.
+        <div class="vocab-grid">
+          <div class="vocab-chip">bathroom<em>where you shower</em></div>
+          <div class="vocab-chip">bedroom<em>where you sleep</em></div>
+          <div class="vocab-chip">dining room<em>where you eat</em></div>
+          <div class="vocab-chip">garage<em>for your car</em></div>
+          <div class="vocab-chip">garden<em>outside green space</em></div>
+          <div class="vocab-chip">gym<em>for exercise</em></div>
+          <div class="vocab-chip">kitchen<em>where you cook</em></div>
+          <div class="vocab-chip">living room<em>where you relax</em></div>
+          <div class="vocab-chip">office<em>where you work</em></div>
+          <div class="vocab-chip">terrace<em>outside on a roof</em></div>
+        </div>
+        <div class="tip"><strong>Teacher note:</strong> Use quick concept checks: "Is a terrace inside or outside?" "Do you cook in the bathroom?" Silly questions help A1+ students remember words fast.</div>
+      </div>
+      <div class="tag-row"><span class="tag tag-vocab">Vocabulary</span></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-left">
+      <div class="time-badge">0:17</div>
+      <div class="dur-badge">5 min</div>
+    </div>
+    <div class="block-right">
+      <div class="block-phase phase-vocab">Vocabulary · Activity</div>
+      <div class="block-title">Where do people do this? (slide 5 activity)</div>
+      <div class="block-body">
+        Complete the activity from slide 5 together. The student chooses two rooms for each activity and makes a sentence following the example pattern.
+        <ul>
+          <li>look at the garden · watch films · brush their teeth</li>
+          <li>put old things · have online meetings · do exercise</li>
+          <li>have dinner · get dressed · read books</li>
+        </ul>
+        <div class="answers"><strong>Sample answers</strong>People usually watch films in the living room and sometimes in the bedroom. · People brush their teeth in the bathroom. · People do exercise in the gym and sometimes in the garden.</div>
+        <div class="tip"><strong>Teacher note:</strong> Accept any logical answer. The goal is fluency, not a single correct answer. Encourage full sentences.</div>
+      </div>
+      <div class="tag-row"><span class="tag tag-speaking">Speaking</span><span class="tag tag-vocab">Vocabulary</span></div>
+    </div>
+  </div>
+
+  <div class="section-head">Phase 3 — Listening</div>
+
+  <div class="block">
+    <div class="block-left">
+      <div class="time-badge">0:22</div>
+      <div class="dur-badge">3 min</div>
+    </div>
+    <div class="block-right">
+      <div class="block-phase phase-listen">Pre-listening</div>
+      <div class="block-title">Predict — what is the video about?</div>
+      <div class="block-body">
+        Show slide 9 ("living in New York") and slide 10. Ask the student to predict: "What do you think? Is the flat big or small?" Then show the 3 options (A, B, C) from slide 10 and ask them to choose before watching.
+        <div class="tip"><strong>Teacher note:</strong> Prediction activates curiosity. Don't rush — 1 minute of prediction is worth 5 minutes of passive watching.</div>
+      </div>
+      <div class="tag-row"><span class="tag tag-speaking">Speaking</span><span class="tag tag-listening">Pre-listening</span></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-left">
+      <div class="time-badge">0:25</div>
+      <div class="dur-badge">12 min</div>
+    </div>
+    <div class="block-right">
+      <div class="block-phase phase-listen">Listening · Comprehension</div>
+      <div class="block-title">Watch the video and answer questions A–G</div>
+      <div class="block-body">
+        Play the video to 02:05 (slide 10). Check the gist answer (slide 11 — answer: A). Then show questions A–G from slides 12–13 and play the video again for detail. Go through questions in two groups as the slides suggest.
+        <div class="answers"><strong>Answer key</strong>
+          A. 2 — seven · B. 1 — a terrace · C. 3 — twelve people · D. 1 — one · E. 1 — queen-sized bed · F. 3 — through the window · G. 2 — one</div>
+        <div class="tip"><strong>Teacher note:</strong> For A1+ students, pause the video after key moments rather than playing straight through. Ask "What did you hear?" after each pause to reduce cognitive load.</div>
+      </div>
+      <div class="tag-row"><span class="tag tag-listening">Listening</span></div>
+    </div>
+  </div>
+
+  <div class="section-head">Phase 4 — Speaking (opinion)</div>
+
+  <div class="block">
+    <div class="block-left">
+      <div class="time-badge">0:37</div>
+      <div class="dur-badge">8 min</div>
+    </div>
+    <div class="block-right">
+      <div class="block-phase phase-speak">Speaking · Opinion</div>
+      <div class="block-title">Do you agree? (slide 20)</div>
+      <div class="block-body">
+        Use the four opinion statements from slide 20. Introduce the useful language frame first: <em>I think / I don't think… because… / I agree / I don't agree because…</em>
+        <ul>
+          <li>The flat in the video is too small for the family.</li>
+          <li>If you live in a small flat, you don't have to clean it very often.</li>
+          <li>It's better to live in a small flat in New York than in a big flat in a small city.</li>
+          <li>It's better to live in a small flat you own than in a big flat you don't own.</li>
+        </ul>
+        <div class="tip"><strong>Teacher note:</strong> Model the first statement yourself with a strong opinion to show the student it's safe to disagree. Aim for 2–3 sentences per statement — don't let single-word answers pass without a "because…?"</div>
+      </div>
+      <div class="tag-row"><span class="tag tag-speaking">Speaking</span></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-left">
+      <div class="time-badge">0:45</div>
+      <div class="dur-badge">4 min</div>
+    </div>
+    <div class="block-right">
+      <div class="block-phase phase-speak">Speaking · Comparison</div>
+      <div class="block-title">Flat with terrace vs house with garden (slides 22–23)</div>
+      <div class="block-body">
+        Show slide 23's two floor plans. Ask the student to choose which is better for the New York family and give 3 reasons why one is better and 3 why the other is worse. Use the sentence frames from the example in slide 22.
+        <div class="tip"><strong>Teacher note:</strong> If the student is stuck, point to specific rooms on the floor plans and ask "Does the family need this?"</div>
+      </div>
+      <div class="tag-row"><span class="tag tag-speaking">Speaking</span></div>
+    </div>
+  </div>
+
+  <div class="section-head">Phase 5 — Grammar review</div>
+
+  <div class="block">
+    <div class="block-left">
+      <div class="time-badge">0:49</div>
+      <div class="dur-badge">8 min</div>
+    </div>
+    <div class="block-right">
+      <div class="block-phase phase-gram">Grammar · Question words</div>
+      <div class="block-title">Complete the gaps — question words (slides 25–26)</div>
+      <div class="block-body">
+        Do the gap-fill exercise from slide 25 together. The student completes 6 sentences using the question words in the box. Two words are not used.
+        <div class="answers"><strong>Answer key</strong>A. How many · B. What · C. How · D. Why · E. Which · F. What time</div>
+        Then immediately answer the questions in slide 27 about the student's own home. This turns grammar into personalised output.
+        <div class="tip"><strong>Teacher note:</strong> Don't just check the grammar answers and move on. Each corrected sentence is a springboard — ask the student to answer it about themselves.</div>
+      </div>
+      <div class="tag-row"><span class="tag tag-grammar">Grammar</span><span class="tag tag-speaking">Speaking</span></div>
+    </div>
+  </div>
+
+  <div class="section-head">Phase 6 — Production &amp; wrap-up</div>
+
+  <div class="block">
+    <div class="block-left">
+      <div class="time-badge">0:57</div>
+      <div class="dur-badge">3 min</div>
+    </div>
+    <div class="block-right">
+      <div class="block-phase phase-prod">Production · Speaking</div>
+      <div class="block-title">Describe your dream home in 1 minute</div>
+      <div class="block-body">
+        Give the student 30 seconds to think, then ask them to describe their ideal home in 1 minute using the vocabulary from the lesson. Prompt with: "How many rooms? Is there a garden? Is there a gym?" Take notes on errors for the feedback moment below.
+        <div class="tip"><strong>Teacher note:</strong> Don't interrupt. Let them finish, then give 2–3 specific pieces of positive feedback and 1–2 error corrections. End on something they said well.</div>
+      </div>
+      <div class="tag-row"><span class="tag tag-speaking">Speaking</span><span class="tag tag-vocab">Vocabulary</span></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-left">
+      <div class="time-badge">1:00</div>
+      <div class="dur-badge">—</div>
+    </div>
+    <div class="block-right">
+      <div class="block-phase phase-wrap">Wrap-up</div>
+      <div class="block-title">Review &amp; homework suggestion</div>
+      <div class="block-body">
+        Recap the vocabulary list together (can the student remember all 10 rooms without looking?). Then suggest a short homework task:
+        <ul>
+          <li><strong>Writing (optional):</strong> Write 5–8 sentences describing your home. Use <em>there is / there are</em> and at least 5 rooms from today.</li>
+          <li><strong>Speaking practice:</strong> Record a 1-minute voice note describing your home as if you're showing it to a friend.</li>
+        </ul>
+      </div>
+      <div class="tag-row"><span class="tag tag-vocab">Vocabulary</span><span class="tag tag-writing">Writing</span></div>
+    </div>
+  </div>
+
+</div>
