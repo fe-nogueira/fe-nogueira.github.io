@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparisons with As...As and Less — A2+ Lesson</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f8f7f4; --surface: #ffffff; --surface2: #f1efe9;
+    --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+    --text: #1a1a18; --text2: #5f5e5a; --text3: #888780;
+    --blue: #185FA5; --blue-light: #E6F1FB; --blue-mid: #B5D4F4; --blue-dark: #0C447C;
+    --teal: #0F6E56; --teal-light: #E1F5EE; --teal-mid: #9FE1CB; --teal-dark: #085041;
+    --amber: #854F0B; --amber-light: #FAEEDA; --amber-mid: #FAC775;
+    --coral: #993C1D; --coral-light: #FAECE7;
+    --purple-light: #EEEDFE; --green: #1D9E75;
+    --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+    --font: 'DM Sans', sans-serif;
+  }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; padding: 1.5rem 1rem 4rem; }
+  .lesson { max-width: 760px; margin: 0 auto; }
+
+  /* Header */
+  .lesson-header { background: var(--surface); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.25rem; border: 0.5px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .lesson-badge { display: inline-block; background: var(--blue-light); color: var(--blue-dark); font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-bottom: 0.75rem; letter-spacing: 0.03em; }
+  .lesson-title { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; color: var(--text); margin-bottom: 0.2rem; }
+  .lesson-sub { font-size: 14px; color: var(--text2); }
+  .progress-wrap { margin-top: 1rem; background: var(--surface2); border-radius: 20px; height: 6px; }
+  .progress-bar { height: 100%; border-radius: 20px; background: var(--blue); transition: width 0.5s ease; width: 0%; }
+  .progress-label { font-size: 12px; color: var(--text3); margin-top: 5px; }
+
+  /* Timer row */
+  .timer-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .timer-pill { display: flex; align-items: center; gap: 7px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 13px; font-weight: 500; color: var(--text2); }
+  .timer-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+  .step-counter { font-size: 13px; color: var(--text3); }
+
+  /* Sections */
+  .section { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1rem; display: none; box-shadow: 0 1px 4px rgba(0,0,0,0.04); animation: fadeIn 0.25s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; }
+  .section-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .icon-blue { background: var(--blue-light); } .icon-teal { background: var(--teal-light); }
+  .icon-amber { background: var(--amber-light); } .icon-purple { background: var(--purple-light); }
+  .icon-coral { background: var(--coral-light); }
+  .section-label { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+  .section-title { font-size: 18px; font-weight: 500; color: var(--text); }
+  .time-tag { display: inline-block; font-size: 11px; color: var(--text3); background: var(--surface2); border-radius: 10px; padding: 2px 8px; margin-left: 6px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+  /* Grammar */
+  .grammar-box { background: var(--surface2); border-left: 3px solid var(--blue); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 1rem 1.25rem; margin-bottom: 1rem; font-size: 14px; color: var(--text2); line-height: 1.7; }
+  .grammar-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  @media (max-width:520px) { .grammar-row { grid-template-columns: 1fr; } }
+  .grammar-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem; }
+  .grammar-card-title { font-size: 12px; font-weight: 500; color: var(--text3); margin-bottom: 0.5rem; }
+  .grammar-formula { font-size: 14px; color: var(--text); line-height: 1.7; }
+  .hl-blue { color: var(--blue); font-weight: 500; } .hl-coral { color: var(--coral); font-weight: 500; }
+  .example-sent { font-size: 14px; color: var(--text2); margin-bottom: 0.5rem; padding-left: 0.85rem; border-left: 2px solid var(--border2); }
+  .example-sent span { color: var(--text); font-style: italic; }
+
+  /* Speak card */
+  .speak-card { background: var(--teal-light); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  .speak-title { font-size: 12px; font-weight: 500; color: var(--teal); margin-bottom: 0.4rem; }
+  .speak-q { font-size: 15px; color: var(--teal-dark); margin-bottom: 0.4rem; line-height: 1.6; }
+  .speak-hint { font-size: 12px; color: var(--teal); }
+
+  /* Exercises */
+  .exercise-item { background: var(--surface2); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 0.75rem; }
+  .exercise-q { font-size: 14px; color: var(--text); margin-bottom: 0.75rem; line-height: 1.6; }
+
+  input.fill-input, input.rewrite-input { background: var(--surface); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 7px 12px; font-size: 14px; color: var(--text); font-family: var(--font); transition: border-color 0.15s; }
+  input.fill-input { width: 230px; }
+  input.rewrite-input { width: 100%; margin-top: 5px; }
+  input.fill-input:focus, input.rewrite-input:focus { outline: none; border-color: var(--blue); }
+
+  .check-btn { margin-top: 0.5rem; background: transparent; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 5px 14px; font-size: 13px; color: var(--text2); cursor: pointer; font-family: var(--font); transition: background 0.15s; }
+  .check-btn:hover { background: var(--surface2); }
+
+  .feedback { font-size: 13px; margin-top: 5px; display: none; line-height: 1.5; }
+  .feedback.correct { color: var(--teal); display: block; }
+  .feedback.wrong { color: var(--coral); display: block; }
+
+  /* Chart table */
+  .chart-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 1rem; }
+  .chart-table th { background: var(--surface2); color: var(--text2); font-weight: 500; padding: 9px 11px; text-align: left; border-bottom: 0.5px solid var(--border); font-size: 12px; }
+  .chart-table td { padding: 8px 11px; border-bottom: 0.5px solid var(--border); color: var(--text); }
+  .chart-table tr:last-child td { border-bottom: none; }
+  .star { color: #BA7517; }
+
+  /* Options grid */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.75rem; }
+  @media (max-width:480px) { .options-grid { grid-template-columns: 1fr; } }
+  .opt-btn { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem; font-size: 14px; color: var(--text); cursor: pointer; text-align: left; font-family: var(--font); transition: border-color 0.15s, background 0.15s; line-height: 1.5; }
+  .opt-btn:hover { border-color: var(--border2); background: var(--surface2); }
+  .opt-btn.selected-correct { border-color: var(--green); background: var(--teal-light); color: var(--teal-dark); }
+  .opt-btn.selected-wrong { border-color: #D85A30; background: var(--coral-light); color: #712B13; }
+
+  /* Nav */
+  .nav-row { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+  .nav-btn { background: var(--surface2); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 8px 20px; font-size: 14px; cursor: pointer; font-family: var(--font); color: var(--text); transition: background 0.15s; }
+  .nav-btn:hover { background: #e5e3db; }
+  .nav-btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .nav-btn.primary:hover { background: var(--blue-dark); }
+
+  hr.divider { border: none; border-top: 0.5px solid var(--border); margin: 1.25rem 0; }
+
+  .review-section { background: var(--amber-light); border-radius: var(--radius-sm); padding: 1rem 1.15rem; margin-bottom: 0.75rem; }
+  .review-title { font-size: 12px; font-weight: 500; color: var(--amber); margin-bottom: 0.4rem; }
+  .review-content { font-size: 14px; color: #633806; line-height: 1.7; }
+
+  .review-intro { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 1rem; }
+
+  /* Tags */
+  .tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 1rem; }
+  .tag { display: inline-block; padding: 5px 13px; border-radius: 20px; font-size: 13px; cursor: pointer; border: 0.5px solid; transition: all 0.15s; user-select: none; }
+  .tag-blue { background: var(--blue-light); color: var(--blue-dark); border-color: var(--blue-mid); }
+  .tag-teal { background: var(--teal-light); color: var(--teal-dark); border-color: var(--teal-mid); }
+  .tag-amber { background: var(--amber-light); color: #633806; border-color: var(--amber-mid); }
+  .tag:hover { opacity: 0.8; }
+  .tag.selected { font-weight: 500; box-shadow: 0 0 0 2px currentColor; }
+
+  /* Mission cards */
+  .mission-card { border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 11px; background: var(--surface); }
+  .mission-num { width: 26px; height: 26px; border-radius: 50%; background: var(--blue-light); color: var(--blue); font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .mission-text { font-size: 14px; color: var(--text); line-height: 1.6; }
+  .mission-hint { font-size: 12px; color: var(--text3); margin-top: 3px; }
+
+  /* Score card */
+  .score-card { background: var(--surface2); border-radius: var(--radius-lg); padding: 2rem 1.5rem; text-align: center; }
+  .score-num { font-family: 'DM Serif Display', serif; font-size: 56px; color: var(--blue); line-height: 1; margin-bottom: 0.25rem; }
+  .score-label { font-size: 14px; color: var(--text2); margin-bottom: 1rem; }
+
+  /* Error correction selects */
+  select.err-sel { font-size: 13px; padding: 3px 7px; border-radius: 6px; border: 0.5px solid var(--border2); background: var(--surface2); color: var(--text); font-family: var(--font); cursor: pointer; transition: all 0.15s; vertical-align: middle; }
+  select.err-sel:focus { outline: none; }
+  select.err-sel.correct-sel { background: var(--teal-light); color: var(--teal-dark); border-color: var(--green); }
+  select.err-sel.wrong-sel { background: var(--coral-light); color: #712B13; border-color: #D85A30; }
+
+  .car-review-block { background: var(--surface2); border-radius: var(--radius-md); padding: 1.15rem 1.25rem; margin-bottom: 0.85rem; font-size: 14px; color: var(--text); line-height: 2; }
+  .car-review-header { font-size: 12px; font-weight: 500; color: var(--text3); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
+  .car-stars { color: #BA7517; }
+  #error-score { font-size: 14px; color: var(--text2); margin-top: 0.75rem; font-weight: 500; }
+
+  #topic-selected { display: none; background: var(--surface2); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem; border: 0.5px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="lesson">
+
+  <!-- HEADER -->
+  <div class="lesson-header">
+    <div class="lesson-badge">Unit 8 · Lesson 2 · A2+</div>
+    <div class="lesson-title">Comparisons with As...As and Less</div>
+    <div class="lesson-sub">60-minute interactive lesson — Active Learning</div>
+    <div class="progress-wrap">
+      <div class="progress-bar" id="main-progress"></div>
+    </div>
+    <div class="progress-label" id="progress-label">Step 0 of 7</div>
+  </div>
+
+  <div class="timer-row">
+    <div class="timer-pill">
+      <div class="timer-dot"></div>
+      <span id="timer-display">00:00</span>
+    </div>
+    <div class="step-counter" id="step-label">Section 1 of 7</div>
+  </div>
+
+  <!-- ══════════ SECTION 1: WARM UP ══════════ -->
+  <div class="section active" id="sec-1">
+    <div class="section-header">
+      <div class="section-icon icon-teal">💬</div>
+      <div>
+        <div class="section-label">Warm-up <span class="time-tag">~8 min</span></div>
+        <div class="section-title">Let's talk! What do you think?</div>
+      </div>
+    </div>
+
+    <p class="review-intro">Before we start, let's activate what you already know. Answer these questions out loud — there are no wrong answers!</p>
+
+    <div class="speak-card">
+      <div class="speak-title">Speaking question 1</div>
+      <div class="speak-q">Do you use streaming services? Which ones? Which do you prefer — Netflix, Amazon Prime, or HBO?</div>
+      <div class="speak-hint">Try to use words like: cheaper, more popular, easier to use, better quality…</div>
+    </div>
+
+    <div class="speak-card">
+      <div class="speak-title">Speaking question 2</div>
+      <div class="speak-q">Look at this chart. Tell your teacher one thing you notice about these services:</div>
+      <div class="speak-hint">Example: "HBO is more expensive than Amazon Prime…"</div>
+    </div>
+
+    <table class="chart-table">
+      <tr><th></th><th>Netflix</th><th>Amazon Prime</th><th>HBO</th></tr>
+      <tr><td>Membership fee</td><td>$9.95</td><td>$5.00</td><td>$5.00</td></tr>
+      <tr><td>Monthly rate</td><td>$7.95</td><td>$8.50</td><td>$9.95</td></tr>
+      <tr><td>New content</td><td>every month</td><td>every 2 weeks</td><td>every week</td></tr>
+      <tr><td>Easy to use</td><td><span class="star">★★★</span></td><td><span class="star">★★★</span></td><td><span class="star">★★★★</span></td></tr>
+      <tr><td>Customer service</td><td><span class="star">★★★</span></td><td><span class="star">★★★★</span></td><td><span class="star">★★★★</span></td></tr>
+    </table>
+
+    <div class="speak-card">
+      <div class="speak-title">Speaking question 3 — prediction</div>
+      <div class="speak-q">Which service do you think is the best overall? Tell your teacher why.</div>
+      <div class="speak-hint">We will come back to this chart later in the lesson!</div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn primary" onclick="goTo(2)">Next: Grammar →</button>
+    </div>
+  </div>
+
+  <!-- ══════════ SECTION 2: GRAMMAR ══════════ -->
+  <div class="section" id="sec-2">
+    <div class="section-header">
+      <div class="section-icon icon-blue">📖</div>
+      <div>
+        <div class="section-label">Grammar Focus <span class="time-tag">~10 min</span></div>
+        <div class="section-title">As...As and Less: The Rules</div>
+      </div>
+    </div>
+
+    <div class="grammar-box">
+      <p style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:0.75rem;">Two ways to compare — equal and not equal</p>
+      <div class="grammar-row">
+        <div class="grammar-card">
+          <div class="grammar-card-title">As + adjective/adverb + As</div>
+          <div class="grammar-formula">
+            <span class="hl-blue">as</span> + adjective + <span class="hl-blue">as</span><br>
+            <em style="color:var(--text3);font-size:13px;">= they are equal</em>
+          </div>
+        </div>
+        <div class="grammar-card">
+          <div class="grammar-card-title">Less + adjective/adverb + Than</div>
+          <div class="grammar-formula">
+            <span class="hl-coral">less</span> + adjective + <span class="hl-coral">than</span><br>
+            <em style="color:var(--text3);font-size:13px;">= not equal (lower)</em>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="exercise-item">
+      <div style="font-size:13px;font-weight:500;color:var(--text3);margin-bottom:0.75rem;">Read the example. Tap the correct meaning:</div>
+      <p style="font-size:15px;color:var(--text);margin-bottom:0.75rem;">"Amazon Prime is <strong>as expensive as</strong> Netflix."</p>
+      <div class="options-grid" id="q-m1">
+        <button class="opt-btn" onclick="selectOpt('q-m1',this,true)">They cost the same</button>
+        <button class="opt-btn" onclick="selectOpt('q-m1',this,false)">Netflix is cheaper</button>
+        <button class="opt-btn" onclick="selectOpt('q-m1',this,false)">Amazon Prime costs more</button>
+        <button class="opt-btn" onclick="selectOpt('q-m1',this,false)">They are different</button>
+      </div>
+    </div>
+
+    <div class="exercise-item">
+      <p style="font-size:15px;color:var(--text);margin-bottom:0.75rem;">"Netflix is <strong>less expensive than</strong> HBO."</p>
+      <div class="options-grid" id="q-m2">
+        <button class="opt-btn" onclick="selectOpt('q-m2',this,false)">They cost the same</button>
+        <button class="opt-btn" onclick="selectOpt('q-m2',this,true)">Netflix costs less than HBO</button>
+        <button class="opt-btn" onclick="selectOpt('q-m2',this,false)">HBO is cheaper</button>
+        <button class="opt-btn" onclick="selectOpt('q-m2',this,false)">They are equal</button>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="grammar-box" style="border-left-color:var(--green);">
+      <p style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:0.5rem;">Important! Not as...as = Less...than (same meaning!)</p>
+      <div class="example-sent"><span>Netflix is not as easy to use as HBO.</span> = Netflix is less easy to use than HBO.</div>
+      <div class="example-sent"><span>Amazon Prime doesn't update as often as HBO.</span> = Amazon Prime updates less often than HBO.</div>
+    </div>
+
+    <div class="speak-card">
+      <div class="speak-title">Check your understanding — say it out loud!</div>
+      <div class="speak-q">Look at the chart from before. Make 2 sentences using "as...as" and 2 using "less...than" about Netflix, Amazon Prime, and HBO.</div>
+      <div class="speak-hint">Example: "HBO's membership fee is as cheap as Amazon Prime's." / "Netflix is less easy to use than HBO."</div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn" onclick="goTo(1)">← Back</button>
+      <button class="nav-btn primary" onclick="goTo(3)">Next: Practice →</button>
+    </div>
+  </div>
+
+  <!-- ══════════ SECTION 3: CONTROLLED PRACTICE ══════════ -->
+  <div class="section" id="sec-3">
+    <div class="section-header">
+      <div class="section-icon icon-amber">✏️</div>
+      <div>
+        <div class="section-label">Controlled Practice <span class="time-tag">~10 min</span></div>
+        <div class="section-title">Fill in the blanks</div>
+      </div>
+    </div>
+
+    <p class="review-intro">Complete each sentence using the words in parentheses. Use the streaming chart to help you. Type your answer, then check it.</p>
+
+    <div class="exercise-item">
+      <div class="exercise-q">1. HBO's membership fee _______________ Amazon Prime's. (be / cheap)</div>
+      <input class="fill-input" id="ans1" placeholder="type your answer…" oninput="clearFeedback('fb1')">
+      <br><button class="check-btn" onclick="checkFill('ans1','is as cheap as','fb1')">Check</button>
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <div class="exercise-item">
+      <div class="exercise-q">2. Becoming a member of Amazon Prime _______________ joining Netflix. (be / expensive)</div>
+      <input class="fill-input" id="ans2" placeholder="type your answer…" oninput="clearFeedback('fb2')">
+      <br><button class="check-btn" onclick="checkFill('ans2','is less expensive than','fb2')">Check</button>
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <div class="exercise-item">
+      <div class="exercise-q">3. Netflix's monthly rate _______________ the others'. (be / high)</div>
+      <input class="fill-input" id="ans3" placeholder="type your answer…" oninput="clearFeedback('fb3')">
+      <br><button class="check-btn" onclick="checkFill('ans3','is less high than','fb3','is not as high as')">Check</button>
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <div class="exercise-item">
+      <div class="exercise-q">4. Amazon Prime's customer service _______________ HBO's. (be / good)</div>
+      <input class="fill-input" id="ans4" placeholder="type your answer…" oninput="clearFeedback('fb4')">
+      <br><button class="check-btn" onclick="checkFill('ans4','is as good as','fb4')">Check</button>
+      <div class="feedback" id="fb4"></div>
+    </div>
+
+    <div class="exercise-item">
+      <div class="exercise-q">5. Netflix adds new content _______________ HBO. (add / frequently)</div>
+      <input class="fill-input" id="ans5" placeholder="type your answer…" oninput="clearFeedback('fb5')">
+      <br><button class="check-btn" onclick="checkFill('ans5','less frequently than','fb5','not as frequently as')">Check</button>
+      <div class="feedback" id="fb5"></div>
+    </div>
+
+    <div class="speak-card" style="margin-top:1rem;">
+      <div class="speak-title">Speak — don't just write!</div>
+      <div class="speak-q">After checking each answer, read the full sentence out loud to your teacher. Can you say it without looking?</div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn" onclick="goTo(2)">← Back</button>
+      <button class="nav-btn primary" onclick="goTo(4)">Next: Rewriting →</button>
+    </div>
+  </div>
+
+  <!-- ══════════ SECTION 4: REWRITE ══════════ -->
+  <div class="section" id="sec-4">
+    <div class="section-header">
+      <div class="section-icon icon-purple">🔄</div>
+      <div>
+        <div class="section-label">Grammar Transformation <span class="time-tag">~8 min</span></div>
+        <div class="section-title">Rewrite the sentences</div>
+      </div>
+    </div>
+
+    <p class="review-intro">Rewrite each sentence using the word in brackets. The meaning stays the same!</p>
+
+    <div class="review-section">
+      <div class="review-title">Remember the pattern:</div>
+      <div class="review-content">
+        less + adj + than &harr; not as + adj + as<br>
+        "My watch is <strong>less attractive than</strong> yours." = "My watch <strong>isn't as attractive as</strong> yours."
+      </div>
+    </div>
+
+    <div class="exercise-item">
+      <div class="exercise-q">1. Sally's shoes aren't as fancy as Jill's. <em style="color:var(--text3)">(less)</em></div>
+      <input class="rewrite-input" id="rw1" placeholder="Sally's shoes are less…" oninput="clearFeedback('rfb1')">
+      <button class="check-btn" onclick="checkFill('rw1','sallys shoes are less fancy than jills','rfb1')">Check</button>
+      <div class="feedback" id="rfb1"></div>
+    </div>
+
+    <div class="exercise-item">
+      <div class="exercise-q">2. Adam exercises less frequently than he used to. <em style="color:var(--text3)">(not as...as)</em></div>
+      <input class="rewrite-input" id="rw2" placeholder="Adam doesn't exercise…" oninput="clearFeedback('rfb2')">
+      <button class="check-btn" onclick="checkFill('rw2','adam doesnt exercise as frequently as he used to','rfb2')">Check</button>
+      <div class="feedback" id="rfb2"></div>
+    </div>
+
+    <div class="exercise-item">
+      <div class="exercise-q">3. This supermarket isn't as expensive as the one across the street. <em style="color:var(--text3)">(less)</em></div>
+      <input class="rewrite-input" id="rw3" placeholder="This supermarket is less…" oninput="clearFeedback('rfb3')">
+      <button class="check-btn" onclick="checkFill('rw3','this supermarket is less expensive than the one across the street','rfb3')">Check</button>
+      <div class="feedback" id="rfb3"></div>
+    </div>
+
+    <div class="exercise-item">
+      <div class="exercise-q">4. This gym is less convenient than the one near my house. <em style="color:var(--text3)">(not as...as)</em></div>
+      <input class="rewrite-input" id="rw4" placeholder="This gym isn't…" oninput="clearFeedback('rfb4')">
+      <button class="check-btn" onclick="checkFill('rw4','this gym isnt as convenient as the one near my house','rfb4')">Check</button>
+      <div class="feedback" id="rfb4"></div>
+    </div>
+
+    <div class="speak-card" style="margin-top:1rem;">
+      <div class="speak-title">Pair check</div>
+      <div class="speak-q">Read your answers to your teacher. Explain WHY you used "less" or "not as...as". What's the difference in formality?</div>
+      <div class="speak-hint">Tip: "not as...as" is more common in speaking. "less...than" is a bit more formal.</div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn" onclick="goTo(3)">← Back</button>
+      <button class="nav-btn primary" onclick="goTo(5)">Next: Error Correction →</button>
+    </div>
+  </div>
+
+  <!-- ══════════ SECTION 5: ERROR CORRECTION — ELECTRIC CARS ══════════ -->
+  <div class="section" id="sec-5">
+    <div class="section-header">
+      <div class="section-icon icon-coral">🔍</div>
+      <div>
+        <div class="section-label">Error Correction <span class="time-tag">~8 min</span></div>
+        <div class="section-title">Find and fix the mistakes</div>
+      </div>
+    </div>
+
+    <p class="review-intro">Read these online reviews of electric cars. There are <strong>6 comparison errors</strong>. Select the correct word from each dropdown to fix them!</p>
+
+    <!-- Review 1: Tesla -->
+    <div class="car-review-block">
+      <div class="car-review-header">
+        <span class="car-stars">★★★★★</span>
+        <strong>Tesla Model 3</strong>
+        <span style="color:var(--text3);font-weight:400;">— reviewed by Carlos</span>
+      </div>
+      I love this car! I had a Nissan Leaf before, and the Tesla is much more comfortable
+      <select class="err-sel" onchange="checkSelect(this,'than')">
+        <option value="">▼</option>
+        <option value="than">than</option>
+        <option value="then">then</option>
+        <option value="as">as</option>
+      </select>
+      the Leaf. The battery range is not
+      <select class="err-sel" onchange="checkSelect(this,'as')">
+        <option value="">▼</option>
+        <option value="as">as</option>
+        <option value="than">than</option>
+      </select>
+      long as some people say online, but it's still very good. Charging is also much faster
+      <select class="err-sel" onchange="checkSelect(this,'than')">
+        <option value="">▼</option>
+        <option value="than">than</option>
+        <option value="then">then</option>
+      </select>
+      my old gasoline car. Highly recommended!
+    </div>
+
+    <!-- Review 2: Nissan Leaf -->
+    <div class="car-review-block">
+      <div class="car-review-header">
+        <span class="car-stars">★★★</span>
+        <strong>Nissan Leaf</strong>
+        <span style="color:var(--text3);font-weight:400;">— reviewed by Ana</span>
+      </div>
+      The Leaf is great for city driving. It's less expensive
+      <select class="err-sel" onchange="checkSelect(this,'than')">
+        <option value="">▼</option>
+        <option value="than">than</option>
+        <option value="then">then</option>
+        <option value="as">as</option>
+      </select>
+      a Tesla, which is great for my budget. But the range isn't as good
+      <select class="err-sel" onchange="checkSelect(this,'as')">
+        <option value="">▼</option>
+        <option value="as">as</option>
+        <option value="than">than</option>
+      </select>
+      I expected. I don't drive it as comfortably
+      <select class="err-sel" onchange="checkSelect(this,'as')">
+        <option value="">▼</option>
+        <option value="as">as</option>
+        <option value="than">than</option>
+      </select>
+      my old car on long highways.
+    </div>
+
+    <div id="error-score"></div>
+
+    <div class="speak-card" style="margin-top:1rem;">
+      <div class="speak-title">Discuss with your teacher</div>
+      <div class="speak-q">Why do people confuse "than" and "then"? Make one sentence with "than" and one with "then" to show the difference.</div>
+      <div class="speak-hint">Example: "The Tesla is faster <em>than</em> the Leaf." vs "I charged the car, and <em>then</em> I drove to work."</div>
+    </div>
+
+    <div class="speak-card">
+      <div class="speak-title">Extension — your opinion!</div>
+      <div class="speak-q">Would you buy an electric car? Compare a Tesla and a Nissan Leaf using today's grammar. Or compare an electric car with a regular car!</div>
+      <div class="speak-hint">Think about: price, speed, charging time, driving range, environmental impact…</div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn" onclick="goTo(4)">← Back</button>
+      <button class="nav-btn primary" onclick="goTo(6)">Next: Free Practice →</button>
+    </div>
+  </div>
+
+  <!-- ══════════ SECTION 6: FREE PRODUCTION ══════════ -->
+  <div class="section" id="sec-6">
+    <div class="section-header">
+      <div class="section-icon icon-teal">🗣️</div>
+      <div>
+        <div class="section-label">Free Production <span class="time-tag">~12 min</span></div>
+        <div class="section-title">Your turn to compare!</div>
+      </div>
+    </div>
+
+    <p class="review-intro">Now use the grammar naturally. Choose a topic and compare two things. Speak for at least 1 minute!</p>
+
+    <p style="font-size:13px;font-weight:500;color:var(--text3);margin-bottom:0.5rem;">Choose your topic:</p>
+    <div class="tag-row" id="topic-tags">
+      <span class="tag tag-blue" onclick="selectTopic(this,'🚌 Transportation — bus vs metro vs taxi')">🚌 Transportation</span>
+      <span class="tag tag-teal" onclick="selectTopic(this,'🍕 Restaurants — two places you know')">🍕 Restaurants</span>
+      <span class="tag tag-amber" onclick="selectTopic(this,'📱 Apps or websites you use')">📱 Apps / Websites</span>
+      <span class="tag tag-blue" onclick="selectTopic(this,'🎬 Two movies or TV shows')">🎬 Movies / Shows</span>
+      <span class="tag tag-teal" onclick="selectTopic(this,'🚗 Two cars or brands you know')">🚗 Cars / Brands</span>
+    </div>
+
+    <div id="topic-selected">
+      <div style="font-size:13px;color:var(--text3);margin-bottom:0.4rem;">Your topic:</div>
+      <div id="topic-display" style="font-size:15px;color:var(--text);font-weight:500;"></div>
+    </div>
+
+    <div class="exercise-item">
+      <div style="font-size:13px;font-weight:500;color:var(--text3);margin-bottom:0.75rem;">Use ALL of these structures. Check each one off as you use it:</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);margin-bottom:6px;cursor:pointer;"><input type="checkbox"> as [adjective] as</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);margin-bottom:6px;cursor:pointer;"><input type="checkbox"> less [adjective] than</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);margin-bottom:6px;cursor:pointer;"><input type="checkbox"> not as [adjective] as</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);margin-bottom:6px;cursor:pointer;"><input type="checkbox"> as [adverb] as</label>
+    </div>
+
+    <div class="mission-card">
+      <div class="mission-num">1</div>
+      <div>
+        <div class="mission-text">Write 4–5 key words or ideas about your two things.</div>
+        <div class="mission-hint">Don't write full sentences yet — just keywords.</div>
+      </div>
+    </div>
+    <div class="mission-card">
+      <div class="mission-num">2</div>
+      <div>
+        <div class="mission-text">Close your notes and speak for 60 seconds to your teacher.</div>
+        <div class="mission-hint">Use as many comparison structures as you can!</div>
+      </div>
+    </div>
+    <div class="mission-card">
+      <div class="mission-num">3</div>
+      <div>
+        <div class="mission-text">Your teacher gives you feedback. Try again — can you do better?</div>
+        <div class="mission-hint">Focus on using "less" and "not as...as" correctly.</div>
+      </div>
+    </div>
+
+    <div class="speak-card" style="margin-top:1rem;">
+      <div class="speak-title">Extension — ask your teacher!</div>
+      <div class="speak-q">After you speak, ask your teacher: "Do you agree with my comparison? What would you say?"</div>
+      <div class="speak-hint">Great practice for real conversations!</div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn" onclick="goTo(5)">← Back</button>
+      <button class="nav-btn primary" onclick="goTo(7)">Next: Wrap-up →</button>
+    </div>
+  </div>
+
+  <!-- ══════════ SECTION 7: WRAP-UP ══════════ -->
+  <div class="section" id="sec-7">
+    <div class="section-header">
+      <div class="section-icon icon-blue">🏁</div>
+      <div>
+        <div class="section-label">Wrap-up <span class="time-tag">~4 min</span></div>
+        <div class="section-title">Review &amp; Homework</div>
+      </div>
+    </div>
+
+    <p class="review-intro">Great work today! Let's review what you learned.</p>
+
+    <div class="review-section">
+      <div class="review-title">Today's grammar — quick summary</div>
+      <div class="review-content">
+        &bull; Equal: <strong>as</strong> + adj/adv + <strong>as</strong> &rarr; "HBO is as cheap as Amazon Prime."<br>
+        &bull; Not equal: <strong>less</strong> + adj/adv + <strong>than</strong> &rarr; "Netflix is less easy to use than HBO."<br>
+        &bull; Not equal: <strong>not as</strong> + adj/adv + <strong>as</strong> &rarr; "Netflix isn't as easy to use as HBO."<br>
+        &bull; Remember: "less...than" and "not as...as" have the SAME meaning!
+      </div>
+    </div>
+
+    <div class="speak-card">
+      <div class="speak-title">Exit ticket — say it without looking!</div>
+      <div class="speak-q">Make 3 original sentences about YOUR life using today's grammar. Don't look at the lesson!</div>
+      <div class="speak-hint">Example: "My phone isn't as fast as my brother's." / "My city is less expensive than São Paulo."</div>
+    </div>
+
+    <hr class="divider">
+
+    <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:0.75rem;">Homework</p>
+
+    <div class="mission-card">
+      <div class="mission-num">1</div>
+      <div>
+        <div class="mission-text">Write 5 sentences comparing 2 products or services you use (like Netflix vs HBO).</div>
+        <div class="mission-hint">Use "less" in 2 sentences, "not as...as" in 2 sentences, and "as...as" in 1 sentence.</div>
+      </div>
+    </div>
+    <div class="mission-card">
+      <div class="mission-num">2</div>
+      <div>
+        <div class="mission-text">Make a comparison chart with 3 real products you know. Choose 5 categories to compare.</div>
+        <div class="mission-hint">Could be cars, phones, restaurants, apps — anything you like!</div>
+      </div>
+    </div>
+    <div class="mission-card">
+      <div class="mission-num">3</div>
+      <div>
+        <div class="mission-text">Optional challenge: find a product review online and highlight all the comparisons you find.</div>
+        <div class="mission-hint">Bring it to the next class to discuss!</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="score-card">
+      <div class="score-num" id="final-time">--:--</div>
+      <div class="score-label">Total lesson time</div>
+      <p style="font-size:14px;color:var(--text2);">You completed all 7 sections. Excellent work!</p>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn" onclick="goTo(6)">← Back</button>
+    </div>
+  </div>
+
+</div><!-- end .lesson -->
+
+<script>
+var cur = 1, total = 7;
+var t0 = Date.now();
+var errCount = 0, errTotal = 6;
+
+setInterval(function() {
+  var e = Math.floor((Date.now()-t0)/1000);
+  var m = Math.floor(e/60), s = e%60;
+  document.getElementById('timer-display').textContent =
+    (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}, 1000);
+
+function goTo(n) {
+  document.getElementById('sec-'+cur).classList.remove('active');
+  cur = n;
+  document.getElementById('sec-'+n).classList.add('active');
+  var pct = Math.round(((n-1)/total)*100);
+  document.getElementById('main-progress').style.width = pct+'%';
+  document.getElementById('progress-label').textContent = n===total ? 'Complete!' : 'Step '+(n-1)+' of '+total;
+  document.getElementById('step-label').textContent = 'Section '+n+' of '+total;
+  if (n===total) {
+    var e = Math.floor((Date.now()-t0)/1000);
+    var m = Math.floor(e/60), s = e%60;
+    document.getElementById('final-time').textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    document.getElementById('main-progress').style.width = '100%';
+  }
+  window.scrollTo(0,0);
+}
+
+function norm(s) {
+  return s.toLowerCase().trim()
+    .replace(/[.,!?']/g,'')
+    .replace(/n't/g,' not')
+    .replace(/\s+/g,' ');
+}
+
+function checkFill(id, correct, fbId, alt) {
+  var v = norm(document.getElementById(id).value);
+  var c = norm(correct);
+  var ok = v===c || v.includes(c) || c.includes(v);
+  if (alt) { var a = norm(alt); ok = ok || v===a || v.includes(a) || a.includes(v); }
+  var fb = document.getElementById(fbId);
+  fb.className = 'feedback '+(ok?'correct':'wrong');
+  fb.textContent = ok ? '✓ Correct! Well done.' : '✗ Try again. Hint: "'+correct+'"';
+  fb.style.display = 'block';
+}
+
+function clearFeedback(id) {
+  var fb = document.getElementById(id);
+  if (fb) fb.style.display = 'none';
+}
+
+function selectOpt(gId, btn, correct) {
+  document.getElementById(gId).querySelectorAll('.opt-btn').forEach(function(b){ b.className='opt-btn'; });
+  btn.className = 'opt-btn '+(correct?'selected-correct':'selected-wrong');
+}
+
+function checkSelect(sel, correct) {
+  if (!sel.value) return;
+  if (sel.value === correct) {
+    sel.classList.remove('wrong-sel');
+    sel.classList.add('correct-sel');
+    if (!sel.dataset.scored) {
+      sel.dataset.scored = '1';
+      errCount++;
+      document.getElementById('error-score').textContent =
+        errCount + ' of ' + errTotal + ' errors fixed!';
+    }
+  } else {
+    sel.classList.remove('correct-sel');
+    sel.classList.add('wrong-sel');
+  }
+}
+
+function selectTopic(el, text) {
+  document.querySelectorAll('#topic-tags .tag').forEach(function(t){ t.classList.remove('selected'); });
+  el.classList.add('selected');
+  document.getElementById('topic-display').textContent = text;
+  document.getElementById('topic-selected').style.display = 'block';
+}
+</script>
+</body>
+</html>
